@@ -3,10 +3,17 @@
 <head>
 <title>Professional Puhazhenthi</title>
 <style>
-h1#h101{border:10px solid blue; color:green;
+h1#h101{border:1px solid blue; color:green;
 padding:10px;
 margin:50px;}
-p{color:red;font-size:20px}
+p{color:black;font-size:20px}
+table,td,th{border:1px solid green;}
+td,th{padding:15px;margin:25px}
+th{text-align:left}
+table{border-spacing:5px}
+tr:nth-child(even){background-color:red}
+tr:nth-child(odd){background-color:yellow}
+.sampleClass{color:red;background-color:yellow}
 </style>
 </head>
 <body>
@@ -15,18 +22,19 @@ p{color:red;font-size:20px}
 <a href="https://www.youtube.com/watch?v=Q2IiqLfUYgc" target="_blank"><img src="http://www.goodlightscraps.com/content/funny-animation/funny-animation-7.gif" alt="Passport sized photo of puhazh" style="width:58px;height:58px;float:left;"></a>
 <p>This is professional puhazhenthi, well known as Danga Maari. He is Preethy's best friend. His wife Dr. Mahalakshmi is Preethy's most special friend. He has a cuuuute kid named Akilan. He works for CSC (work?!?!). He is also known as Payments King!! For more details about him, click on his photo!!</p>
 <br>
-<h4>Score Card</h4>
 <table border="1" style="width:25%">
+<caption>Score Card</caption>
 <tr>
 <th>Subject</th>
-<th>Score</th>
+<th colspan="2">Score</th>
 </tr>
 <tr>
 <td>C++</td>
 <td>100%</td>
+<td>120%</td>
 </tr>
 <tr>
-<td>Jave</td>
+<td id="t01">Jave</td>
 <td>100%</td>
 </tr>
 <tr>
@@ -34,7 +42,7 @@ p{color:red;font-size:20px}
 <td>100%</td>
 </tr>
 <tr>
-<td>SharePoint</td>
+<td id="t01">SharePoint</td>
 <td>100%</td>
 </tr>
 <tr>
@@ -42,5 +50,28 @@ p{color:red;font-size:20px}
 <td>100%</td>
 </tr>
 </table>
+
+<h2>Best friends list</h2>
+<ul style="list-style-type:square">
+<li>Preethy Srikanthan</li>
+<li>Preethy Srikanthan</li>
+<li>Preethy Srikanthan</li>
+<li>Preethy Srikanthan</li>
+</ul>
+
+<h2 class="sampleClass">His priorities in life</h2>
+<ol  type="i">
+<li>Family</li>
+<li>News</li>
+<li>Food</li>
+<li>Sleep</li>
+<li>Entertainment</li>
+<li>If possible, work</li>
+</ol>
+
+<div style="background-color:red;color:green;padding:5px;border-radius:10px;margin:25px">
+<h2>recap about nanbar</h2>
+<p>professional puhazhenthi, well known as Danga Maari. He is Preethy's best friend. His wife Dr. Mahalakshmi is Preethy's most special friend. He has a cuuuute kid named Akilan. He works for CSC (work?!?!). He is also known as Payments King!!</p>
+</div>
 </body>
 </html>	
