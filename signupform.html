@@ -4,7 +4,7 @@
 <title></title>
 </head>
 <body>
-<form autocomplete="on">
+<form name="signupdata" autocomplete="on">
 <fieldset>
 <legend>Personal info</legend>
 First Name:<br>
@@ -12,8 +12,8 @@ First Name:<br>
 Last Name:<br>
 <input type="text" name="lastname"><br>
 Gender:<br>
-<input type="radio" name="gender" value="male" checked>
-<input type="radio" name="gender" value="female"><br>
+<input type="radio" name="gender" value="male" checked>Male</input>
+<input type="radio" name="gender" value="female">Female</input><br>
 Date of birth:<br>
 <input type="date" name="dob"><br>
 </fieldset>
@@ -30,8 +30,8 @@ Pincode:<br>
 </fieldset>
 <fieldset>
 <legend>Professional details</legend>
-Educational qualification:<br>
-<select name="degree">
+Educational qualification: (cntrl click to select many)<br>
+<select name="degree" multiple>
 <option disabled selected>--Select ur degree--</option>
 <option value="be">BE</option>
 <option value="mca">MCA</option>
