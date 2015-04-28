@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<form autocomplete="on">
+<fieldset>
+<legend>Personal info</legend>
+First Name:<br>
+<input type="text" name="firstname" autofocus><br>
+Last Name:<br>
+<input type="text" name="lastname"><br>
+Gender:<br>
+<input type="radio" name="gender" value="male" checked>
+<input type="radio" name="gender" value="female"><br>
+Date of birth:<br>
+<input type="date" name="dob"><br>
+</fieldset>
+<fieldset>
+<legend>Contact details</legend>
+Email id:<br>
+<input type="email" name="email"><br>
+Mobile number:<br>
+<input type="text" maxlength="10" name="mobile" pattern="[0-9]{10}"><br>
+Address:<br>
+<textarea name="aboutu" rows="10" cols="30" placeholder="Enter your address here"></textarea><br>
+Pincode:<br>
+<input type="text" name="zip" maxlength="6">
+</fieldset>
+<fieldset>
+<legend>Professional details</legend>
+Educational qualification:<br>
+<select name="degree">
+<option disabled selected>--Select ur degree--</option>
+<option value="be">BE</option>
+<option value="mca">MCA</option>
+<option value="lkg">LKG</option>
+</select><br>
+Profession:<br>
+<input list="profession">
+<datalist id="profession">
+<option value="IT">
+<option value="Doctor">
+<option value="Teacher">
+<option value="Vip">
+</datalist>
+</fieldset>
+<fieldset>
+<legend>Login details</legend>
+User name:<br>
+<input type="text" name="username" required><br>
+Password:<br>
+<input type="password" name="pswd"><br>
+</fieldset>
+<button type="button" onclick="alert('yow danga maari!')">Click here to submit!</button>
+</form>
+</body>
+</html>
