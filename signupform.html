@@ -2,27 +2,31 @@
 <html>
 <head>
 <title></title>
+<style>
+.error{border:2px solid red}
+</style>
 </head>
 <body>
+
 <form name="signupdata" autocomplete="on">
 <fieldset>
 <legend>Personal info</legend>
-First Name:<br>
-<input type="text" name="firstname" autofocus><br>
+First Name:<sup>*</sup><br>
+<input type="text" name="firstname" autofocus required><br>
 Last Name:<br>
 <input type="text" name="lastname"><br>
-Gender:<br>
+Gender:<sup>*</sup><br>
 <input type="radio" name="gender" value="male" checked>Male</input>
 <input type="radio" name="gender" value="female">Female</input><br>
 Date of birth:<br>
-<input type="date" name="dob"><br>
+<input type="date" name="dob" required><br>
 </fieldset>
 <fieldset>
 <legend>Contact details</legend>
-Email id:<br>
-<input type="email" name="email"><br>
-Mobile number:<br>
-<input type="text" maxlength="10" name="mobile" pattern="[0-9]{10}"><br>
+Email id:<sup>*</sup><br>
+<input type="email" name="email" required><br>
+Mobile number:<sup>*</sup><br>
+<input type="text" maxlength="10" name="mobile" pattern="[0-9]{10}" required> <p id="mobilevalid"></p>
 Address:<br>
 <textarea name="aboutu" rows="10" cols="30" placeholder="Enter your address here"></textarea><br>
 Pincode:<br>
@@ -48,12 +52,40 @@ Profession:<br>
 </fieldset>
 <fieldset>
 <legend>Login details</legend>
-User name:<br>
+User name:<sup>*</sup><br>
 <input type="text" name="username" required><br>
-Password:<br>
-<input type="password" name="pswd"><br>
+Password:<sup>*</sup><br>
+<input type="password" name="pswd" required><br>
 </fieldset>
-<button type="button" onclick="alert('yow danga maari!')">Click here to submit!</button>
+<button type="button" onclick="validateMobile()">Click here to submit!</button>
+<button type="button" onclick="this.form.reset()">Reset!</button>
 </form>
+
+<script>
+//var formValidator = new Validator("signupdata");
+
+function validateMobile(){
+var num,errMsg,isErr,eleName;
+//eleName=mobile;
+num = document.signupdata["mobile"].value;
+isErr=0;
+if(isNaN(num)){
+	errMsg="Enter a valid mobile number";
+	isErr=1;
+	document.getElementById("mobilevalid").innerHTML=errMsg;
+}
+
+	//changeBoxColor(isErr,document.signupdata["mobile"]);
+}
+/*
+function changeBoxColor(isErr,eleName){
+console.log(eleName.value);
+if (isErr==1)
+	document.eleName.className = document.eleName.className + " error";
+else
+	document.getElementById(eleName).className = document.getElemebtById(eleName).className.replace(" error","");
+} */
+</script>
+
 </body>
 </html>
