@@ -1,65 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Professional best friends</title>
+<title></title>
 <style>
-ul#menu{padding:0;}
-ul#menu li{display:inline;}
-ul#menu li a{
-	background-color:grey;
-	color:black;
-	padding:10px 20px;
-	border-radius:4px 10px 0 0;
-	text-decoration:none;
-}
-ul#menu li a:hover{background-color:yellow;}
-#header{
-	background-color:grey;
-	color:black;
-	text-align:center;
-	padding:5px;
-	}
-#nav{
-	line-height:30px;
-	background-color:grey;
-	height:300px;
-	width:200px;
-	float:left;
-	padding:10px;
-	}
-#section{
-	width:700px;
-	float:left;
-	}
-#footer{
-	background-color:black;
-	color:white;
-	clear:both;
-	padding:5px;
-	text-align:center;
-	}
-	
-
+.error{border:2px solid red}
 </style>
 </head>
+
 <body>
-<div id="header">
-<h1>Professional best friends</h1>
-</div>
-<ul id="menu" style="list-syle-type:none">
-<li><a href="http://puhazh.github.io/firstproj.html" target="iframe1" title="Danga Maari">Puhazhenthi</a></li>
-<li><a href="http://puhazh.github.io/preethy.html" target="iframe1" title="Dandanaka">Preethy</a></li>
-</ul>
-<div id="nav">
-facebook<br>
-twitter<br>
-</div>
-<div id="section">
-<iframe name="iframe1" id="iframe1" height="300px" width="700px" src=""></iframe>
-</div>
-<div id="footer">
-<p>Naan solvadhelaam unmai unmai thavira verondrum ilai. Copyright &copy; Professionals!!</p>
-</div>
+
+<form name="signupdata" id="signupdata" autocomplete="on">
+<fieldset>
+<legend>Personal info</legend>
+First Name:<sup>*</sup><br>
+<input type="text" name="firstname" id="first_name" autofocus required><br>
+Last Name:<br>
+<input type="text" name="lastname" id="last_name"><br>
+Gender:<sup>*</sup><br>
+<input type="radio" name="gender" id="gender" value="Male" checked>Male</input>
+<input type="radio" name="gender" id="gender" value="Female">Female</input><br>
+Date of birth:<sup>*<sup><br>
+<input type="date" name="dob" id="dob" required><br>
+</fieldset>
+<fieldset>
+<legend>Contact details</legend>
+Email id:<sup>*</sup><br>
+<input type="email" name="email" id="email" required><br>
+Mobile number:<sup>*</sup><br>
+<input type="text" maxlength="10" name="mobile" id="mobile" pattern="[0-9]{10}" required> <p id="mobilevalid"></p>
+Address:<br>
+<textarea name="address" id="addr" rows="10" cols="30" placeholder="Enter your address here"></textarea><br>
+Pincode:<br>
+<input type="text" name="zip" id="zip" maxlength="6">
+</fieldset>
+<fieldset>
+<legend>Professional details</legend>
+Educational qualification: (cntrl click to select many)<br>
+<select name="degree" id="degree" multiple>
+<option disabled selected>--Select ur degree--</option>
+<option value="be">BE</option>
+<option value="mca">MCA</option>
+<option value="lkg">LKG</option>
+</select><br>
+Profession:<br>
+<input list="profession">
+<datalist id="profession">
+<option value="IT">
+<option value="Doctor">
+<option value="Teacher">
+<option value="Vip">
+</datalist>
+</fieldset>
+<fieldset>
+<legend>Login details</legend>
+User name:<sup>*</sup><br>
+<input type="text" name="username" id="username" required><br>
+Password:<sup>*</sup><br>
+<input type="password" name="pswd" id="pswd" required><br>
+</fieldset>
+</form>
+
+<input type="submit" onclick="display();">
+
+<label>your input:</label>
+<p><span id="display"></span></p>
+
+<script>
+function display(){
+var FormData = "FIRSTNAME=" + document.getElementById("first_name").value + "<br>";
+FormData += "LASTNAME=" + document.getElementById("last_name").value + "<br>";
+var gender = document.getElementsByName("gender");
+console.log(gender.length);
+var gender1="";
+for (var i = 0;i<gender.length; i++) {
+console.log('forrr');
+	if(gender[i].checked) {
+		console.log("checked");
+		gender1=gender[i].value;
+		console.log(gender1);
+		break;
+	}
+}
+FormData += "GENDER=" + gender1 + "<br>";
+FormData += "DOB=" + document.getElementById("dob").value + "<br>";
+FormData += "EMAIL=" + document.getElementById("email").value + "<br>";
+FormData += "MOBILE=" + document.getElementById("mobile").value + "<br>";
+FormData += "ADDRESS=" + document.getElementById("addr").value + "<br>";
+FormData += "PINCODE=" + document.getElementById("zip").value + "<br>";
+document.write(FormData);
+//document.getElementById('display').innerHTML=data;
+}
+</script>
 
 </body>
 </html>
