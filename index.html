@@ -38,12 +38,12 @@ Pincode:<br>
 Educational qualification: (cntrl click to select many)<br>
 <select name="degree" id="degree" multiple>
 <option disabled selected>--Select ur degree--</option>
-<option value="be">BE</option>
-<option value="mca">MCA</option>
-<option value="lkg">LKG</option>
+<option value="BE">BE</option>
+<option value="MCA">MCA</option>
+<option value="LKG">LKG</option>
 </select><br>
 Profession:<br>
-<input list="profession">
+<input list="profession" id="proflist">
 <datalist id="profession">
 <option value="IT">
 <option value="Doctor">
@@ -71,6 +71,7 @@ var FormData = "FIRSTNAME=" + document.getElementById("first_name").value + "<br
 FormData += "LASTNAME=" + document.getElementById("last_name").value + "<br>";
 var gender = document.getElementsByName("gender");
 console.log(gender.length);
+//to read radio button
 var gender1="";
 for (var i = 0;i<gender.length; i++) {
 console.log('forrr');
@@ -87,6 +88,29 @@ FormData += "EMAIL=" + document.getElementById("email").value + "<br>";
 FormData += "MOBILE=" + document.getElementById("mobile").value + "<br>";
 FormData += "ADDRESS=" + document.getElementById("addr").value + "<br>";
 FormData += "PINCODE=" + document.getElementById("zip").value + "<br>";
+//to read from multiple select list
+var deg=new Array();
+var count=0;
+var degSelect = document.getElementById("degree");
+console.log("aft decl");
+for(var i = 0; i < degSelect.length ; i++) {
+console.log("loop");
+	if(degSelect[i].selected){
+	console.log("if");
+		deg[count]=degSelect[i].value;
+		count++;
+	}
+}
+console.log(deg);
+FormData += "DEGREE=";
+for (var i = 0; i < deg.length ; i++) {		
+	FormData += deg[i] + " ";
+}
+FormData += "<br>";
+//to read from datalist
+FormData += "PROFESSION=" + document.getElementById("proflist").value + "<br>";
+FormData += "USERNAMW=" + document.getElementById("username").value + "<br>";
+FormData += "SHOCKING!!! PASSWORD=" + document.getElementById("pswd").value + "<br>";
 document.write(FormData);
 //document.getElementById('display').innerHTML=data;
 }
