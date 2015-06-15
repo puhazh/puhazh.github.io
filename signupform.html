@@ -6,43 +6,44 @@
 .error{border:2px solid red}
 </style>
 </head>
+
 <body>
 
-<form name="signupdata" autocomplete="on">
+<form name="signupdata" id="signupdata" autocomplete="on">
 <fieldset>
 <legend>Personal info</legend>
 First Name:<sup>*</sup><br>
-<input type="text" name="firstname" autofocus required><br>
+<input type="text" name="firstname" id="first_name" autofocus required><br>
 Last Name:<br>
-<input type="text" name="lastname"><br>
+<input type="text" name="lastname" id="last_name"><br>
 Gender:<sup>*</sup><br>
-<input type="radio" name="gender" value="male" checked>Male</input>
-<input type="radio" name="gender" value="female">Female</input><br>
-Date of birth:<br>
-<input type="date" name="dob" required><br>
+<input type="radio" name="gender" id="gender" value="Male" checked>Male</input>
+<input type="radio" name="gender" id="gender" value="Female">Female</input><br>
+Date of birth:<sup>*<sup><br>
+<input type="date" name="dob" id="dob" required><br>
 </fieldset>
 <fieldset>
 <legend>Contact details</legend>
 Email id:<sup>*</sup><br>
-<input type="email" name="email" required><br>
+<input type="email" name="email" id="email" required><br>
 Mobile number:<sup>*</sup><br>
-<input type="text" maxlength="10" name="mobile" pattern="[0-9]{10}" required> <p id="mobilevalid"></p>
+<input type="text" maxlength="10" name="mobile" id="mobile" pattern="[0-9]{10}" required> <p id="mobilevalid"></p>
 Address:<br>
-<textarea name="aboutu" rows="10" cols="30" placeholder="Enter your address here"></textarea><br>
+<textarea name="address" id="addr" rows="10" cols="30" placeholder="Enter your address here"></textarea><br>
 Pincode:<br>
-<input type="text" name="zip" maxlength="6">
+<input type="text" name="zip" id="zip" maxlength="6">
 </fieldset>
 <fieldset>
 <legend>Professional details</legend>
 Educational qualification: (cntrl click to select many)<br>
-<select name="degree" multiple>
+<select name="degree" id="degree" multiple>
 <option disabled selected>--Select ur degree--</option>
-<option value="be">BE</option>
-<option value="mca">MCA</option>
-<option value="lkg">LKG</option>
+<option value="BE">BE</option>
+<option value="MCA">MCA</option>
+<option value="LKG">LKG</option>
 </select><br>
 Profession:<br>
-<input list="profession">
+<input list="profession" id="proflist">
 <datalist id="profession">
 <option value="IT">
 <option value="Doctor">
@@ -53,38 +54,66 @@ Profession:<br>
 <fieldset>
 <legend>Login details</legend>
 User name:<sup>*</sup><br>
-<input type="text" name="username" required><br>
+<input type="text" name="username" id="username" required><br>
 Password:<sup>*</sup><br>
-<input type="password" name="pswd" required><br>
+<input type="password" name="pswd" id="pswd" required><br>
 </fieldset>
-<button type="button" onclick="validateMobile()">Click here to submit!</button>
-<button type="button" onclick="this.form.reset()">Reset!</button>
 </form>
 
+<input type="submit" onclick="display();">
+
+<label>your input:</label>
+<p><span id="display"></span></p>
+
 <script>
-//var formValidator = new Validator("signupdata");
-
-function validateMobile(){
-var num,errMsg,isErr,eleName;
-//eleName=mobile;
-num = document.signupdata["mobile"].value;
-isErr=0;
-if(isNaN(num)){
-	errMsg="Enter a valid mobile number";
-	isErr=1;
-	document.getElementById("mobilevalid").innerHTML=errMsg;
+function display(){
+var FormData = "FIRSTNAME=" + document.getElementById("first_name").value + "<br>";
+FormData += "LASTNAME=" + document.getElementById("last_name").value + "<br>";
+var gender = document.getElementsByName("gender");
+console.log(gender.length);
+//to read radio button
+var gender1="";
+for (var i = 0;i<gender.length; i++) {
+console.log('forrr');
+	if(gender[i].checked) {
+		console.log("checked");
+		gender1=gender[i].value;
+		console.log(gender1);
+		break;
+	}
 }
-
-	//changeBoxColor(isErr,document.signupdata["mobile"]);
+FormData += "GENDER=" + gender1 + "<br>";
+FormData += "DOB=" + document.getElementById("dob").value + "<br>";
+FormData += "EMAIL=" + document.getElementById("email").value + "<br>";
+FormData += "MOBILE=" + document.getElementById("mobile").value + "<br>";
+FormData += "ADDRESS=" + document.getElementById("addr").value + "<br>";
+FormData += "PINCODE=" + document.getElementById("zip").value + "<br>";
+//to read from multiple select list
+var deg=new Array();
+var count=0;
+var degSelect = document.getElementById("degree");
+console.log("aft decl");
+for(var i = 0; i < degSelect.length ; i++) {
+console.log("loop");
+	if(degSelect[i].selected){
+	console.log("if");
+		deg[count]=degSelect[i].value;
+		count++;
+	}
 }
-/*
-function changeBoxColor(isErr,eleName){
-console.log(eleName.value);
-if (isErr==1)
-	document.eleName.className = document.eleName.className + " error";
-else
-	document.getElementById(eleName).className = document.getElemebtById(eleName).className.replace(" error","");
-} */
+console.log(deg);
+FormData += "DEGREE=";
+for (var i = 0; i < deg.length ; i++) {		
+	FormData += deg[i] + " ";
+}
+FormData += "<br>";
+//to read from datalist
+FormData += "PROFESSION=" + document.getElementById("proflist").value + "<br>";
+FormData += "USERNAMW=" + document.getElementById("username").value + "<br>";
+FormData += "SHOCKING!!! PASSWORD=" + document.getElementById("pswd").value + "<br>";
+document.write(FormData);
+//document.getElementById('display').innerHTML=data;
+}
 </script>
 
 </body>
