@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<p id="demo"></p>
+	<button type="button" onclick="openNewWindow()">Open new window</button>
+	<button type="button" onclick="moveWindow()">Move window</button>
+	<button type="button" onclick="resizeWindow()">Resize window</button>
+	<button type="button" onclick="closeWindow()">Close window</button>
+</body>
+<script>
+	var newWindow;
+	function openNewWindow() {
+		newWindow = window.open("","new window","width=20px, height=10px");
+		newWindow.document.write("new window!!");
+	}
+	function moveWindow() {
+		<!-- openNewWindow(); -->
+		newWindow.moveTo(500,500);
+		newWindow.focus();
+		newWindow.document.write("<br>moved!!");
+	}
+	function resizeWindow() {
+		newWindow.resizeTo(300,300);
+		newWindow.focus();
+		newWindow.document.write("<br>resized!!");
+	}
+	function closeWindow() {
+		newWindow.close();
+	}
+	
+	var browserWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+	var browserHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	
+	document.getElementById("demo").innerHTML = "Browser width = " + browserWidth + "<br>" + "Browser height = " + browserHeight;
+</script>
+</html>
