@@ -5,6 +5,7 @@
 <style>
 .error{border:2px solid red}
 </style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 </head>
 
 <body>
@@ -66,6 +67,14 @@ Password:<sup>*</sup><br>
 <p><span id="display"></span></p>
 
 <script>
+$(document).ready(function(){
+	$("input").focus(function(){
+		$(this).css("background-color","#BDBDBD")
+	});
+	$("input").blur(function(){
+		$(this).css("background-color","white")
+	});
+});
 function display(){
 var FormData = "FIRSTNAME=" + document.getElementById("first_name").value + "<br>";
 FormData += "LASTNAME=" + document.getElementById("last_name").value + "<br>";
