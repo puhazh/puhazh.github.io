@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Bricks</title>
+</head>
+<body>
+
+<canvas id="gameConsole" width="450" height="650" style="border:1px solid #c3c3c3;float:left;margin-right:20px;margin-bottom:15px"> 
+No Canvas Support
+</canvas>
+
+<script>
+	
+	var canvas=document.getElementById("gameConsole");
+	var ctx=canvas.getContext("2d");
+	var WIDTH = 450;
+	var HEIGHT = 650;
+	var x = WIDTH/2 - 100;
+	var y = HEIGHT/2 - 10;
+	var grd=ctx.createLinearGradient(0,0,WIDTH,HEIGHT);
+	
+	function init(){
+		ctx.font="30px Verdana";
+		grd.addColorStop(0,"black");
+		grd.addColorStop("0.3","magenta");
+		grd.addColorStop("0.6","blue");
+		grd.addColorStop("0.8","green");
+		grd.addColorStop(1,"red");
+		ctx.strokeStyle=grd;
+		
+		return setInterval(paint, 10); // Paint is called each 10ms, to keep the view updated
+	}
+	
+	function paint(){
+		clear();
+		ctx.strokeText("Coming Soon!",x,y); 
+	}
+	
+	function clear(){
+		ctx.clearRect(0, 0, WIDTH, HEIGHT);
+	}
+	
+	function doKeyDown(evt){
+		switch (evt.keyCode) {
+			case 38:  // Up key pressed
+				y = y - 10;
+				if(y<=-10)
+					y=HEIGHT;
+				paint();
+				// alert("Up");
+				break;
+			case 40:  // Down key pressed
+				y = y + 10;
+				if(y>=HEIGHT+10)
+					y=0;
+				paint();
+				// alert("Down");
+				break;
+			case 37:  // Left key pressed
+				x = x - 10;
+				if(x<=-200)
+					x=WIDTH;
+				paint();
+				// alert("Left");
+				break;
+			case 39:  // Right key pressed
+				x = x + 10;
+				if(x>=HEIGHT+50)
+					x=0;
+				paint();
+				// alert("Right");
+				break;
+		}
+	}
+	
+	init();
+	window.addEventListener('keydown',doKeyDown,true);
+</script>
+
+</body>
+</html>
