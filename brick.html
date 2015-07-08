@@ -7,7 +7,7 @@
 <body>
 <b> Try using the arrow keys!</b>
 <br/><br/>
-<canvas id="gameConsole" width="450" height="650" style="border:1px solid #c3c3c3;float:left; margin-right:20px;margin-bottom:15px"> 
+<canvas id="gameConsole" width="550" height="625" style="border:1px solid #c3c3c3;float:left; margin-left:0px;margin-right:20px;margin-bottom:15px"> 
 No Canvas Support
 </canvas>
 
@@ -15,11 +15,13 @@ No Canvas Support
 	
 	var canvas=document.getElementById("gameConsole");
 	var ctx=canvas.getContext("2d");
-	var WIDTH = 450;
-	var HEIGHT = 650;
-	var x = WIDTH/2 - 100;
-	var y = HEIGHT/2 - 10;
-	var grd=ctx.createLinearGradient(0,0,WIDTH,HEIGHT);
+	var CANVAS_WIDTH = 550;
+	var CANVAS_HEIGHT = 625;
+	var PLAY_AREA_WIDTH = 350;
+	var PLAY_AREA_HEIGHT = 625;
+	var x = CANVAS_WIDTH/2 - 100;
+	var y = CANVAS_HEIGHT/2 - 10;
+	var grd=ctx.createLinearGradient(0,0,CANVAS_WIDTH,-CANVAS_HEIGHT);
 	
 	function init(){
 		ctx.font="30px Verdana";
@@ -29,45 +31,79 @@ No Canvas Support
 		grd.addColorStop("0.8","green");
 		grd.addColorStop(1,"red");
 		ctx.strokeStyle=grd;
-		
+		ctx.translate(0, CANVAS_HEIGHT);
 		return setInterval(paint, 10); // Paint is called each 10ms, to keep the view updated
+	}
+	
+	function drawConsole(){
+		
+		// Draw the play area border
+		ctx.lineWidth = 3;
+		ctx.strokeStyle = '#000000';
+		ctx.beginPath();
+		ctx.rect(0, 0, PLAY_AREA_WIDTH, -PLAY_AREA_HEIGHT);
+		ctx.fillStyle='#A0A0A0';
+		ctx.fill(); 
+		ctx.stroke();
+		
+		ctx.strokeStyle='#D0D0D0';
+		ctx.lineWidth = 1;		
+		
+		// Draw the vertical lines
+		for(i=1; i<14;i++)
+		{
+			ctx.beginPath();
+			ctx.moveTo(i*25, 0);
+			ctx.lineTo(i*25, -PLAY_AREA_HEIGHT);
+			ctx.stroke();
+		}
+		
+		// Draw the horizontal lines
+		for(i=1;i<25;i++)
+		{
+			ctx.beginPath();
+			ctx.moveTo(0, -i*25);
+			ctx.lineTo(PLAY_AREA_WIDTH, -i*25);
+			ctx.stroke();
+		}
 	}
 	
 	function paint(){
 		clear();
-		ctx.strokeText("Coming Soon!",x,y); 
+		drawConsole();
+		ctx.strokeText("Coming Soon!",x,-y);
 	}
 	
 	function clear(){
-		ctx.clearRect(0, 0, WIDTH, HEIGHT);
+		ctx.clearRect(0, 0, CANVAS_WIDTH, -CANVAS_HEIGHT);
 	}
 	
 	function doKeyDown(evt){
 		switch (evt.keyCode) {
 			case 38:  // Up key pressed
-				y = y - 10;
-				if(y<=-10)
-					y=HEIGHT;
+				y = y + 10;
+				if(y >= CANVAS_HEIGHT+10)
+					y=0;
 				paint();
-				// alert("Up");
+				// alert("Up" + x + " " + y);
 				break;
 			case 40:  // Down key pressed
-				y = y + 10;
-				if(y>=HEIGHT+10)
-					y=0;
+				y = y - 10;
+				if(y<=-10)
+					y=CANVAS_HEIGHT;
 				paint();
 				// alert("Down");
 				break;
 			case 37:  // Left key pressed
 				x = x - 10;
 				if(x<=-200)
-					x=WIDTH;
+					x=CANVAS_WIDTH;
 				paint();
 				// alert("Left");
 				break;
 			case 39:  // Right key pressed
 				x = x + 10;
-				if(x>=HEIGHT+50)
+				if(x>=CANVAS_WIDTH+50)
 					x=0;
 				paint();
 				// alert("Right");
