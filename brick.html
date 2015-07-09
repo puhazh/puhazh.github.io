@@ -1,8 +1,14 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<title>Bricks</title>
+	<meta charset="UTF-8" />
+	<title>Bricks</title>
+	<style id="css">
+	@font-face {
+		font-family: 'Digital';
+		src: url('fonts/digital-7.ttf');
+	}
+	</style>
 </head>
 <body>
 <b> Try using the arrow keys!</b>
@@ -21,7 +27,6 @@ No Canvas Support
 	var PLAY_AREA_HEIGHT = 625;
 	var x = CANVAS_WIDTH/2 - 100;
 	var y = CANVAS_HEIGHT/2 - 10;
-	var grd=ctx.createLinearGradient(0,0,CANVAS_WIDTH,-CANVAS_HEIGHT);
 	
 	function init(){
 		ctx.translate(0, CANVAS_HEIGHT); // Move the origin to bottom left
@@ -62,9 +67,9 @@ No Canvas Support
 		}
 		
 		// Draw the next piece area
-		ctx.strokeStyle = '#000000';
-		ctx.font="15px Verdana";
-		ctx.strokeText("Next:",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-45));
+		ctx.fillStyle = '#000000';
+		ctx.font="Bold Italic 15px Verdana";
+		ctx.fillText("Next:",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-45));
 		
 		ctx.beginPath();
 		ctx.strokeStyle = '#000000';
@@ -93,21 +98,25 @@ No Canvas Support
 		}
 		
 		// Score
-		ctx.strokeStyle = '#000000';
-		ctx.font="12px Verdana";
-		ctx.strokeText("Score: 0",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-25*9));
+		ctx.fillStyle = '#000000';
+		ctx.font="Bold Italic 18px Ariel";
+		ctx.fillText("Score:",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-25*9));
+		// ctx.font="20px Digital";
+		ctx.fillText("1234567890",PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-25*9));
 		
 		// Level
-		ctx.strokeStyle = '#000000';
-		ctx.font="12px Verdana";
-		ctx.strokeText("Level: 0",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-25*11));
+		ctx.fillStyle = '#000000';
+		ctx.font="Bold Italic 18px Ariel";
+		ctx.fillText("Level:",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-25*11));
+		// ctx.font="18px Digital";
+		ctx.fillText("0",PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-25*11));
 	}
 	
 	function paint(){
 		clear();
 		drawConsole();
 		ctx.strokeStyle = '#000000';
-		ctx.font="30px Verdana";
+		ctx.font="30px Ariel";
 		ctx.strokeText("Coming Soon!",x,-y);
 	}
 	
