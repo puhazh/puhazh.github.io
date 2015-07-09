@@ -24,15 +24,9 @@ No Canvas Support
 	var grd=ctx.createLinearGradient(0,0,CANVAS_WIDTH,-CANVAS_HEIGHT);
 	
 	function init(){
-		ctx.font="30px Verdana";
-		grd.addColorStop(0,"black");
-		grd.addColorStop("0.3","magenta");
-		grd.addColorStop("0.6","blue");
-		grd.addColorStop("0.8","green");
-		grd.addColorStop(1,"red");
-		ctx.strokeStyle=grd;
-		ctx.translate(0, CANVAS_HEIGHT);
-		return setInterval(paint, 10); // Paint is called each 10ms, to keep the view updated
+		ctx.translate(0, CANVAS_HEIGHT); // Move the origin to bottom left
+		paint();
+		// return setInterval(paint, 10); // Paint is called each 10ms, to keep the view updated
 	}
 	
 	function drawConsole(){
@@ -49,7 +43,7 @@ No Canvas Support
 		ctx.strokeStyle='#D0D0D0';
 		ctx.lineWidth = 1;		
 		
-		// Draw the vertical lines
+		// Draw the vertical lines - Play Area
 		for(i=1; i<14;i++)
 		{
 			ctx.beginPath();
@@ -58,7 +52,7 @@ No Canvas Support
 			ctx.stroke();
 		}
 		
-		// Draw the horizontal lines
+		// Draw the horizontal lines - Play Area
 		for(i=1;i<25;i++)
 		{
 			ctx.beginPath();
@@ -66,11 +60,54 @@ No Canvas Support
 			ctx.lineTo(PLAY_AREA_WIDTH, -i*25);
 			ctx.stroke();
 		}
+		
+		// Draw the next piece area
+		ctx.strokeStyle = '#000000';
+		ctx.font="15px Verdana";
+		ctx.strokeText("Next:",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-45));
+		
+		ctx.beginPath();
+		ctx.strokeStyle = '#000000';
+		ctx.fillStyle='#A0A0A0';
+		ctx.rect(PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-50-25*4), 25*4, -25*4);
+		ctx.fill(); 
+		ctx.stroke();
+		
+		ctx.strokeStyle='#D0D0D0';
+		// Draw the vertical lines - Next Piece
+		for(i=1; i<4;i++)
+		{
+			ctx.beginPath();
+			ctx.moveTo(PLAY_AREA_WIDTH+50+i*25, -(PLAY_AREA_HEIGHT-50-25*4));
+			ctx.lineTo(PLAY_AREA_WIDTH+50+i*25, -(PLAY_AREA_HEIGHT-50));
+			ctx.stroke();
+		}
+		
+		// Draw the vertical lines - Next Piece
+		for(i=1; i<4;i++)
+		{
+			ctx.beginPath();
+			ctx.moveTo(PLAY_AREA_WIDTH+50, -(PLAY_AREA_HEIGHT-50-25*4+i*25));
+			ctx.lineTo(PLAY_AREA_WIDTH+50+25*4, -(PLAY_AREA_HEIGHT-50-25*4+i*25));
+			ctx.stroke();
+		}
+		
+		// Score
+		ctx.strokeStyle = '#000000';
+		ctx.font="12px Verdana";
+		ctx.strokeText("Score: 0",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-25*9));
+		
+		// Level
+		ctx.strokeStyle = '#000000';
+		ctx.font="12px Verdana";
+		ctx.strokeText("Level: 0",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-25*11));
 	}
 	
 	function paint(){
 		clear();
 		drawConsole();
+		ctx.strokeStyle = '#000000';
+		ctx.font="30px Verdana";
 		ctx.strokeText("Coming Soon!",x,-y);
 	}
 	
