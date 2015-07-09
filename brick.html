@@ -14,7 +14,7 @@
 <b> Try using the arrow keys!</b>
 <br/><br/>
 <canvas id="gameConsole" width="550" height="625" style="border:1px solid #c3c3c3;float:left; margin-left:0px;margin-right:20px;margin-bottom:15px"> 
-No Canvas Support
+No Support for Canvas, use a modern browser.
 </canvas>
 
 <script>
@@ -25,16 +25,57 @@ No Canvas Support
 	var CANVAS_HEIGHT = 625;
 	var PLAY_AREA_WIDTH = 350;
 	var PLAY_AREA_HEIGHT = 625;
+	var BRICK_SIZE = 25;
+	
+	var score = 0;
+	var level = 0;
+	var nextPiece = 0;
+	var currentPiece = 0;
+	var curPieceIndex=0;
+	var nextPieceIndex=0;
+	var rotationIndex=0
+	var board = new Array(26); 
+	var SQUARE_PIECE=[0x6600];
+	var REG_Z_PIECE=[0x7E00, 0x8CC4];
+	var INV_Z_PIECE=[0xE700, 0x4CC8];
+	var I_PIECE=[0x4444, 0xF000];
+	var T_PIECE=[0x4E00, 0x4640, 0x7200, 0x2620];
+	var pieces=[SQUARE_PIECE, REG_Z_PIECE, INV_Z_PIECE, I_PIECE, T_PIECE];
+	
 	var x = CANVAS_WIDTH/2 - 100;
 	var y = CANVAS_HEIGHT/2 - 10;
 	
 	function init(){
 		ctx.translate(0, CANVAS_HEIGHT); // Move the origin to bottom left
+		initModel();
 		paint();
-		// return setInterval(paint, 10); // Paint is called each 10ms, to keep the view updated
+		playGame();
+		updateConsole();
+		// return setInterval(paint, 2000); // Paint is called each 10ms, to keep the view updated
 	}
 	
-	function drawConsole(){
+	function paint(){
+		clear();
+		drawConsole();
+		ctx.strokeStyle = '#000000';
+		ctx.font="30px Ariel";
+		ctx.strokeText("Coming Soon!",x,-y);
+	}
+	
+	function clear(){
+		ctx.clearRect(0, 0, CANVAS_WIDTH, -CANVAS_HEIGHT);
+	}
+	
+	function initModel(){
+		// Only the LSB 16 bits are used, initialize only that as desired
+		board[0]=0xFFFF; // Bottom hidden layer
+		for(i = 0; i < board.length; i++){
+			board[i]=0x8001; // hidden outer boundary on left and right
+		}
+		// nextPiece=0x0000;
+	}
+	
+	function drawConsole(){ // Creates the game console with play area, next piece, score, etc
 		
 		// Draw the play area border
 		ctx.lineWidth = 3;
@@ -52,8 +93,8 @@ No Canvas Support
 		for(i=1; i<14;i++)
 		{
 			ctx.beginPath();
-			ctx.moveTo(i*25, 0);
-			ctx.lineTo(i*25, -PLAY_AREA_HEIGHT);
+			ctx.moveTo(i*BRICK_SIZE, 0);
+			ctx.lineTo(i*BRICK_SIZE, -PLAY_AREA_HEIGHT);
 			ctx.stroke();
 		}
 		
@@ -61,8 +102,8 @@ No Canvas Support
 		for(i=1;i<25;i++)
 		{
 			ctx.beginPath();
-			ctx.moveTo(0, -i*25);
-			ctx.lineTo(PLAY_AREA_WIDTH, -i*25);
+			ctx.moveTo(0, -i*BRICK_SIZE);
+			ctx.lineTo(PLAY_AREA_WIDTH, -i*BRICK_SIZE);
 			ctx.stroke();
 		}
 		
@@ -74,7 +115,7 @@ No Canvas Support
 		ctx.beginPath();
 		ctx.strokeStyle = '#000000';
 		ctx.fillStyle='#A0A0A0';
-		ctx.rect(PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-50-25*4), 25*4, -25*4);
+		ctx.rect(PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4), BRICK_SIZE*4, -BRICK_SIZE*4);
 		ctx.fill(); 
 		ctx.stroke();
 		
@@ -83,8 +124,8 @@ No Canvas Support
 		for(i=1; i<4;i++)
 		{
 			ctx.beginPath();
-			ctx.moveTo(PLAY_AREA_WIDTH+50+i*25, -(PLAY_AREA_HEIGHT-50-25*4));
-			ctx.lineTo(PLAY_AREA_WIDTH+50+i*25, -(PLAY_AREA_HEIGHT-50));
+			ctx.moveTo(PLAY_AREA_WIDTH+50+i*BRICK_SIZE, -(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4));
+			ctx.lineTo(PLAY_AREA_WIDTH+50+i*BRICK_SIZE, -(PLAY_AREA_HEIGHT-50));
 			ctx.stroke();
 		}
 		
@@ -92,36 +133,88 @@ No Canvas Support
 		for(i=1; i<4;i++)
 		{
 			ctx.beginPath();
-			ctx.moveTo(PLAY_AREA_WIDTH+50, -(PLAY_AREA_HEIGHT-50-25*4+i*25));
-			ctx.lineTo(PLAY_AREA_WIDTH+50+25*4, -(PLAY_AREA_HEIGHT-50-25*4+i*25));
+			ctx.moveTo(PLAY_AREA_WIDTH+50, -(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4+i*BRICK_SIZE));
+			ctx.lineTo(PLAY_AREA_WIDTH+50+BRICK_SIZE*4, -(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4+i*BRICK_SIZE));
 			ctx.stroke();
 		}
 		
 		// Score
 		ctx.fillStyle = '#000000';
 		ctx.font="Bold Italic 18px Ariel";
-		ctx.fillText("Score:",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-25*9));
+		ctx.fillText("Score:",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-BRICK_SIZE*9));
 		// ctx.font="20px Digital";
-		ctx.fillText("1234567890",PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-25*9));
+		ctx.fillText(score,PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-BRICK_SIZE*9));
 		
 		// Level
 		ctx.fillStyle = '#000000';
 		ctx.font="Bold Italic 18px Ariel";
-		ctx.fillText("Level:",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-25*11));
+		ctx.fillText("Level:",PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-BRICK_SIZE*11));
 		// ctx.font="18px Digital";
-		ctx.fillText("0",PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-25*11));
+		ctx.fillText(level,PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-BRICK_SIZE*11));
 	}
 	
-	function paint(){
-		clear();
-		drawConsole();
-		ctx.strokeStyle = '#000000';
-		ctx.font="30px Ariel";
-		ctx.strokeText("Coming Soon!",x,-y);
+	function updateConsole(){ // Updates the game console with the model data (game progress, score, level)
+				
+		// Read each bit and plot the board with the current status
+		for(i=1;i<board.length;i++){ // skipped 0, as its bottom hidden
+			var bitMask=0x4000; // skip hidden first left
+			for(j=1;j<15;j++){
+				var bitSet = bitMask & board[i];
+				bitMask = bitMask>>1;
+				
+				if(bitSet!=0){ // The bit is set, set the brick to on in the board
+					ctx.fillStyle='#000000';
+					ctx.strokeStyle='#A0A0A0';
+					ctx.lineWidth=1;
+					ctx.beginPath();
+					ctx.rect((j-1)*BRICK_SIZE, -(i-1)*BRICK_SIZE, BRICK_SIZE, -BRICK_SIZE);
+					ctx.fill(); 
+					ctx.stroke();
+				}
+			}
+		}
+		
+		// Update the next piece with model data
+		var bitMask=0x8000;
+		var y=0;
+		for(i=0;i<16;i++){
+			var bitSet = bitMask & nextPiece;
+			if(bitSet!=0){ // Check for the set bit in the next piece and set the respective brick
+				ctx.fillStyle='#000000';
+				ctx.strokeStyle='#A0A0A0';
+				ctx.lineWidth=1;
+				ctx.beginPath();
+				ctx.rect(PLAY_AREA_WIDTH+50+(i%4)*BRICK_SIZE, -(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4)-y*BRICK_SIZE, BRICK_SIZE, -BRICK_SIZE);
+				ctx.fill(); 
+				ctx.stroke();
+			}
+			if(i%4==3) // Increment the column
+				y++;
+			bitMask = bitMask>>1;
+		}
+		
+		// Clear the score and level area
+		ctx.fillStyle='#FFFFFF';
+		ctx.beginPath();
+		ctx.rect(PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-BRICK_SIZE*8),200,200);
+		ctx.fill(); 
+		
+		// Update the score
+		ctx.fillStyle = '#000000';
+		ctx.font="Bold Italic 18px Ariel";
+		ctx.fillText(score,PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-BRICK_SIZE*9));
+		
+		// Update the level
+		ctx.fillText(level,PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-BRICK_SIZE*11));
 	}
 	
-	function clear(){
-		ctx.clearRect(0, 0, CANVAS_WIDTH, -CANVAS_HEIGHT);
+	function playGame(){
+		// Start the game
+		// Initialize current and next piece
+		curPieceIndex=Math.floor(Math.random()*11)%pieces.length;
+		nextPieceIndex=Math.floor(Math.random()*11)%pieces.length;
+		currentPiece=pieces[curPieceIndex][rotationIndex];
+		nextPiece=pieces[nextPieceIndex][rotationIndex];
 	}
 	
 	function doKeyDown(evt){
@@ -131,6 +224,9 @@ No Canvas Support
 				if(y >= CANVAS_HEIGHT+10)
 					y=0;
 				paint();
+				rotationIndex=(rotationIndex+1)%pieces[nextPieceIndex].length;
+				nextPiece=pieces[nextPieceIndex][rotationIndex];
+				updateConsole();
 				// alert("Up" + x + " " + y);
 				break;
 			case 40:  // Down key pressed
