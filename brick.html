@@ -36,19 +36,23 @@ No Support for Canvas, use a modern browser.
 	var rotationIndex=0
 	var board = new Array(26); 
 	var SQUARE_PIECE=[0x6600];
-	var REG_Z_PIECE=[0x7E00, 0x8CC4];
-	var INV_Z_PIECE=[0xE700, 0x4CC8];
+	var REG_Z_PIECE=[0x6C00, 0x8C40];
+	var INV_Z_PIECE=[0xC600, 0x4C80];
 	var I_PIECE=[0x4444, 0xF000];
-	var T_PIECE=[0x4E00, 0x4640, 0x7200, 0x2620];
+	var T_PIECE=[0x4E00, 0x4640, 0xE400, 0x2620];
 	var pieces=[SQUARE_PIECE, REG_Z_PIECE, INV_Z_PIECE, I_PIECE, T_PIECE];
 	
-	var x = CANVAS_WIDTH/2 - 100;
-	var y = CANVAS_HEIGHT/2 - 10;
-	
+	var boardColor = '#A0A0A0';
+	var blocksColor = '#000000';
+	var splitLinesColor = '#D0D0D0';
+	var blockCurX = 5;
+	var blockCurY = 21;
+		
 	function init(){
 		ctx.translate(0, CANVAS_HEIGHT); // Move the origin to bottom left
 		initModel();
 		paint();
+		startNewGame();
 		playGame();
 		updateConsole();
 		// return setInterval(paint, 2000); // Paint is called each 10ms, to keep the view updated
@@ -57,9 +61,6 @@ No Support for Canvas, use a modern browser.
 	function paint(){
 		clear();
 		drawConsole();
-		ctx.strokeStyle = '#000000';
-		ctx.font="30px Ariel";
-		ctx.strokeText("Coming Soon!",x,-y);
 	}
 	
 	function clear(){
@@ -69,7 +70,7 @@ No Support for Canvas, use a modern browser.
 	function initModel(){
 		// Only the LSB 16 bits are used, initialize only that as desired
 		board[0]=0xFFFF; // Bottom hidden layer
-		for(i = 0; i < board.length; i++){
+		for(i = 1; i < board.length; i++){
 			board[i]=0x8001; // hidden outer boundary on left and right
 		}
 		// nextPiece=0x0000;
@@ -82,11 +83,11 @@ No Support for Canvas, use a modern browser.
 		ctx.strokeStyle = '#000000';
 		ctx.beginPath();
 		ctx.rect(0, 0, PLAY_AREA_WIDTH, -PLAY_AREA_HEIGHT);
-		ctx.fillStyle='#A0A0A0';
+		ctx.fillStyle=boardColor;
 		ctx.fill(); 
 		ctx.stroke();
 		
-		ctx.strokeStyle='#D0D0D0';
+		ctx.strokeStyle=splitLinesColor;
 		ctx.lineWidth = 1;		
 		
 		// Draw the vertical lines - Play Area
@@ -114,12 +115,12 @@ No Support for Canvas, use a modern browser.
 		
 		ctx.beginPath();
 		ctx.strokeStyle = '#000000';
-		ctx.fillStyle='#A0A0A0';
+		ctx.fillStyle=boardColor;
 		ctx.rect(PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4), BRICK_SIZE*4, -BRICK_SIZE*4);
 		ctx.fill(); 
 		ctx.stroke();
 		
-		ctx.strokeStyle='#D0D0D0';
+		ctx.strokeStyle=splitLinesColor;
 		// Draw the vertical lines - Next Piece
 		for(i=1; i<4;i++)
 		{
@@ -163,8 +164,8 @@ No Support for Canvas, use a modern browser.
 				bitMask = bitMask>>1;
 				
 				if(bitSet!=0){ // The bit is set, set the brick to on in the board
-					ctx.fillStyle='#000000';
-					ctx.strokeStyle='#A0A0A0';
+					ctx.fillStyle=blocksColor;
+					ctx.strokeStyle=splitLinesColor;
 					ctx.lineWidth=1;
 					ctx.beginPath();
 					ctx.rect((j-1)*BRICK_SIZE, -(i-1)*BRICK_SIZE, BRICK_SIZE, -BRICK_SIZE);
@@ -180,8 +181,8 @@ No Support for Canvas, use a modern browser.
 		for(i=0;i<16;i++){
 			var bitSet = bitMask & nextPiece;
 			if(bitSet!=0){ // Check for the set bit in the next piece and set the respective brick
-				ctx.fillStyle='#000000';
-				ctx.strokeStyle='#A0A0A0';
+				ctx.fillStyle=blocksColor;
+				ctx.strokeStyle=splitLinesColor;
 				ctx.lineWidth=1;
 				ctx.beginPath();
 				ctx.rect(PLAY_AREA_WIDTH+50+(i%4)*BRICK_SIZE, -(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4)-y*BRICK_SIZE, BRICK_SIZE, -BRICK_SIZE);
@@ -208,49 +209,104 @@ No Support for Canvas, use a modern browser.
 		ctx.fillText(level,PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-BRICK_SIZE*11));
 	}
 	
-	function playGame(){
+	function startNewGame(){
 		// Start the game
 		// Initialize current and next piece
 		curPieceIndex=Math.floor(Math.random()*11)%pieces.length;
 		nextPieceIndex=Math.floor(Math.random()*11)%pieces.length;
 		currentPiece=pieces[curPieceIndex][rotationIndex];
 		nextPiece=pieces[nextPieceIndex][rotationIndex];
+		
+		// Set the scores and level to 0s
+		score = 0;
+		level = 0;
+		
+		setInterval(playGame, 2000);
 	}
 	
-	function doKeyDown(evt){
+	function playGame(){
+
+		// Erase the previous block
+		drawBlock(currentPiece, blockCurX, blockCurY, '#000000');
+		
+	}
+	
+	function canMoveDown(){
+	
+		// Check if the next row below has any bits set
+		if( (board[blockCurY]&0XF000>>6)&(currentPiece&0xF000) || 
+			(board[blockCurY+1]&(currentPiece&0x0F00)) || 
+			(board[blockCurY+2]&(currentPiece&0x00F0)) || 
+			(board[blockCurY+3]&(currentPiece&0x000F))){
+			return false;
+		}
+		return true;
+	}
+	
+	function canMoveRight(){
+		return true;
+	}
+	
+	function canMoveLeft(){
+		return true;
+	}
+	
+	function drawBlock(block, colX, colY, blockColor){ // Displays the block on the board, also used to reset display (when board color is passed)
+		var bitMask=0x8000;
+		var y=0;
+		
+		for(i=0;i<16;i++){
+			var bitSet = bitMask & block;
+			if(bitSet!=0){ // Check for the set bit in the current piece and set the respective brick
+				ctx.fillStyle=blockColor;
+				ctx.strokeStyle=splitLinesColor;
+				ctx.lineWidth=1;
+				ctx.beginPath();
+				ctx.rect(colX*BRICK_SIZE, -colY*BRICK_SIZE, BRICK_SIZE, -BRICK_SIZE);
+				ctx.fill(); 
+				ctx.stroke();
+			}
+			colX++;
+			if(i%4==3) {// Increment the column
+				colY++;
+				colX=colX-4;
+			}
+			bitMask = bitMask>>1;
+		}
+	
+		return;
+	}
+	
+	function doKeyDown(evt){ // Monitor the Key Press Event
+	
+		// Erase the existing block position/rotation
+		drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
+		
 		switch (evt.keyCode) {
 			case 38:  // Up key pressed
-				y = y + 10;
-				if(y >= CANVAS_HEIGHT+10)
-					y=0;
-				paint();
-				rotationIndex=(rotationIndex+1)%pieces[nextPieceIndex].length;
-				nextPiece=pieces[nextPieceIndex][rotationIndex];
-				updateConsole();
-				// alert("Up" + x + " " + y);
+				rotationIndex=(rotationIndex+1)%pieces[curPieceIndex].length;			
+				currentPiece=pieces[curPieceIndex][rotationIndex];
 				break;
 			case 40:  // Down key pressed
-				y = y - 10;
-				if(y<=-10)
-					y=CANVAS_HEIGHT;
-				paint();
-				// alert("Down");
+				if(canMoveDown()){
+					blockCurY = blockCurY-1;
+				}
 				break;
 			case 37:  // Left key pressed
-				x = x - 10;
-				if(x<=-200)
-					x=CANVAS_WIDTH;
-				paint();
-				// alert("Left");
+				if(canMoveLeft()){
+					blockCurX = blockCurX-1;
+				}
 				break;
 			case 39:  // Right key pressed
-				x = x + 10;
-				if(x>=CANVAS_WIDTH+50)
-					x=0;
-				paint();
-				// alert("Right");
+				if(canMoveRight()){
+					blockCurX = blockCurX+1;
+				}
 				break;
 		}
+		
+		// Draw the block at the new position/rotation
+		drawBlock(currentPiece, blockCurX, blockCurY, blocksColor);
+				
 	}
 	
 	init();
