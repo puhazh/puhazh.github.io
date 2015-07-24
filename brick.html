@@ -42,6 +42,9 @@ No Support for Canvas, use a modern browser.
 	var T_PIECE=[0x4E00, 0x4640, 0xE400, 0x2620];
 	var pieces=[SQUARE_PIECE, REG_Z_PIECE, INV_Z_PIECE, I_PIECE, T_PIECE];
 	
+	var SCORE_INCREMENT=10;
+	var BONUS_INCREMENT=15;
+	
 	var boardColor = '#A0A0A0';
 	var blocksColor = '#000000';
 	var splitLinesColor = '#D0D0D0';
@@ -54,7 +57,6 @@ No Support for Canvas, use a modern browser.
 		paint();
 		startNewGame();
 		playGame();
-		updateConsole();
 		// return setInterval(paint, 2000); // Paint is called each 10ms, to keep the view updated
 	}
 	
@@ -154,7 +156,7 @@ No Support for Canvas, use a modern browser.
 		ctx.fillText(level,PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-BRICK_SIZE*11));
 	}
 	
-	function updateConsole(){ // Updates the game console with the model data (game progress, score, level)
+	function updateConsole(blockColor){ // Updates the game console with the model data (game progress, score, level)
 				
 		// Read each bit and plot the board with the current status
 		for(i=1;i<board.length;i++){ // skipped 0, as its bottom hidden
@@ -164,7 +166,7 @@ No Support for Canvas, use a modern browser.
 				bitMask = bitMask>>1;
 				
 				if(bitSet!=0){ // The bit is set, set the brick to on in the board
-					ctx.fillStyle=blocksColor;
+					ctx.fillStyle=blockColor;
 					ctx.strokeStyle=splitLinesColor;
 					ctx.lineWidth=1;
 					ctx.beginPath();
@@ -175,24 +177,7 @@ No Support for Canvas, use a modern browser.
 			}
 		}
 		
-		// Update the next piece with model data
-		var bitMask=0x8000;
-		var y=0;
-		for(i=0;i<16;i++){
-			var bitSet = bitMask & nextPiece;
-			if(bitSet!=0){ // Check for the set bit in the next piece and set the respective brick
-				ctx.fillStyle=blocksColor;
-				ctx.strokeStyle=splitLinesColor;
-				ctx.lineWidth=1;
-				ctx.beginPath();
-				ctx.rect(PLAY_AREA_WIDTH+50+(i%4)*BRICK_SIZE, -(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4)-y*BRICK_SIZE, BRICK_SIZE, -BRICK_SIZE);
-				ctx.fill(); 
-				ctx.stroke();
-			}
-			if(i%4==3) // Increment the column
-				y++;
-			bitMask = bitMask>>1;
-		}
+		drawNextBlock(blocksColor); // Draw the next block data
 		
 		// Clear the score and level area
 		ctx.fillStyle='#FFFFFF';
@@ -209,51 +194,29 @@ No Support for Canvas, use a modern browser.
 		ctx.fillText(level,PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-BRICK_SIZE*11));
 	}
 	
-	function startNewGame(){
-		// Start the game
-		// Initialize current and next piece
-		curPieceIndex=Math.floor(Math.random()*11)%pieces.length;
-		nextPieceIndex=Math.floor(Math.random()*11)%pieces.length;
-		currentPiece=pieces[curPieceIndex][rotationIndex];
-		nextPiece=pieces[nextPieceIndex][rotationIndex];
-		
-		// Set the scores and level to 0s
-		score = 0;
-		level = 0;
-		
-		setInterval(playGame, 2000);
-	}
-	
-	function playGame(){
-
-		// Erase the previous block
-		drawBlock(currentPiece, blockCurX, blockCurY, '#000000');
-		
-	}
-	
-	function canMoveDown(){
-	
-		// Check if the next row below has any bits set
-		if( (board[blockCurY]&0XF000>>6)&(currentPiece&0xF000) || 
-			(board[blockCurY+1]&(currentPiece&0x0F00)) || 
-			(board[blockCurY+2]&(currentPiece&0x00F0)) || 
-			(board[blockCurY+3]&(currentPiece&0x000F))){
-			return false;
+	function drawNextBlock(blockColor){ // Color used to clear existing/draw new block
+			// Update the next piece with model data
+		var bitMask=0x8000;
+		var y=0;
+		for(i=0;i<16;i++){
+			var bitSet = bitMask & nextPiece;
+			if(bitSet!=0){ // Check for the set bit in the next piece and set the respective brick
+				ctx.fillStyle=blockColor;
+				ctx.strokeStyle=splitLinesColor;
+				ctx.lineWidth=1;
+				ctx.beginPath();
+				ctx.rect(PLAY_AREA_WIDTH+50+(i%4)*BRICK_SIZE, -(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4)-y*BRICK_SIZE, BRICK_SIZE, -BRICK_SIZE);
+				ctx.fill(); 
+				ctx.stroke();
+			}
+			if(i%4==3) // Increment the column
+				y++;
+			bitMask = bitMask>>1;
 		}
-		return true;
-	}
-	
-	function canMoveRight(){
-		return true;
-	}
-	
-	function canMoveLeft(){
-		return true;
 	}
 	
 	function drawBlock(block, colX, colY, blockColor){ // Displays the block on the board, also used to reset display (when board color is passed)
 		var bitMask=0x8000;
-		var y=0;
 		
 		for(i=0;i<16;i++){
 			var bitSet = bitMask & block;
@@ -277,6 +240,115 @@ No Support for Canvas, use a modern browser.
 		return;
 	}
 	
+	// Animated row erase effect
+	function eraseAnimation(rowNum){
+		for(j=1;j<15;j++){
+			ctx.fillStyle=boardColor;
+			ctx.strokeStyle=splitLinesColor;
+			ctx.lineWidth=1;
+			ctx.beginPath();
+			ctx.rect((j-1)*BRICK_SIZE, -(rowNum-1)*BRICK_SIZE, BRICK_SIZE, -BRICK_SIZE);
+			ctx.fill(); 
+			ctx.stroke();
+		}
+	}
+	
+	function startNewGame(){
+		// Start the game
+		// Initialize current and next piece
+		curPieceIndex=Math.floor(Math.random()*11)%pieces.length;
+		nextPieceIndex=Math.floor(Math.random()*11)%pieces.length;
+		currentPiece=pieces[curPieceIndex][rotationIndex];
+		nextPiece=pieces[nextPieceIndex][rotationIndex];
+		
+		// Set the scores and level to 0s
+		score = 0;
+		level = 0;
+		
+		updateConsole(blocksColor);
+		
+		// setInterval(playGame, 2000);
+	}
+	
+	function playGame(){
+
+		// Erase the previous block
+		
+		// Draw the block at current x and y
+		drawBlock(currentPiece, blockCurX, blockCurY, '#000000');
+		
+	}
+	
+	function canMoveDown(){
+	
+		// Check if the next row below is filled (any bits set, for both bottom and blocks check)
+		var maskPosition = blockCurX+1; // Choose the mask based on the current block position
+		
+		if( (board[blockCurY]&(0XF000>>maskPosition))<<maskPosition & (currentPiece&0xF000) || 
+			(board[blockCurY+1]&(0XF000>>maskPosition))<<maskPosition & ((currentPiece&0x0F00)<<4) || 
+			(board[blockCurY+2]&(0XF000>>maskPosition))<<maskPosition & ((currentPiece&0x00F0)<<8) || 
+			(board[blockCurY+3]&(0XF000>>maskPosition))<<maskPosition & ((currentPiece&0x000F)<<12) ){
+			return false;
+		}
+		return true;
+	}
+	
+	function canMoveRight(){
+		return true;
+	}
+	
+	function canMoveLeft(){
+		return true;
+	}
+		
+	function reachedBottom(){
+		// The block has reached the least bottom possible
+		
+		var maskPosition = blockCurX+1; // Choose the mask based on the current block position
+		
+		// Merge the block to the board
+		board[blockCurY+1] = board[blockCurY+1] | (currentPiece&0xF000)>>maskPosition;
+		board[blockCurY+2] = board[blockCurY+2] | ((currentPiece&0x0F00)<<4)>>maskPosition;
+		board[blockCurY+3] = board[blockCurY+3] | ((currentPiece&0x00F0)<<8)>>maskPosition;
+		board[blockCurY+4] = board[blockCurY+4] | ((currentPiece&0x000F)<<12)>>maskPosition;
+	
+		curPieceIndex=nextPieceIndex;
+		currentPiece=nextPiece;
+		rotationIndex=0;
+	
+		drawNextBlock(boardColor); // Erase the next block area
+		
+		nextPieceIndex=Math.floor(Math.random()*11)%pieces.length;
+		nextPiece=pieces[nextPieceIndex][rotationIndex];
+		
+		updateConsole(boardColor); // Erase board with current values
+		
+		var bonusEligible = false;
+		for(i=1;i<=4;i++){
+			if(board[blockCurY+i]==0xFFFF) {
+				
+				// Increase the score
+				if(bonusEligible==true)
+					score = score + BONUS_INCREMENT;
+				else
+					score = score + SCORE_INCREMENT;
+				bonusEligible = true;
+				
+				// Erase the line
+				for(j=blockCurY;j<board.length-3;j++){
+					// Move all rows above the erased one to one down
+					board[j+1]=board[j+2];
+				}
+				board[board.length-1]= 0x8001;
+			}
+		}
+
+		blockCurX = 5;
+		blockCurY = 21;
+		
+		updateConsole(blocksColor); // Update with new values
+	}
+	
 	function doKeyDown(evt){ // Monitor the Key Press Event
 	
 		// Erase the existing block position/rotation
@@ -290,6 +362,9 @@ No Support for Canvas, use a modern browser.
 			case 40:  // Down key pressed
 				if(canMoveDown()){
 					blockCurY = blockCurY-1;
+				}
+				else{ // Reached bottom
+					reachedBottom();
 				}
 				break;
 			case 37:  // Left key pressed
