@@ -1,5 +1,9 @@
 <!doctype html>
 <html>
+<meta content='True' name='HandheldFriendly' />
+<meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
+<meta name="viewport" content="width=device-width" />
+
 <head>
 	<meta charset="UTF-8" />
 	<title>Bricks</title>
@@ -11,7 +15,7 @@
 	</style>
 </head>
 <body>
-<b> Try using the arrow keys!</b>
+<b> Up Arrow Key: Rotate</b>
 <br/><br/>
 <canvas id="gameConsole" width="550" height="625" style="border:1px solid #c3c3c3;float:left; margin-left:0px;margin-right:20px;margin-bottom:15px"> 
 No Support for Canvas, use a modern browser.
@@ -35,12 +39,14 @@ No Support for Canvas, use a modern browser.
 	var nextPieceIndex=0;
 	var rotationIndex=0
 	var board = new Array(26); 
-	var SQUARE_PIECE=[0x6600];
-	var REG_Z_PIECE=[0x6C00, 0x8C40];
-	var INV_Z_PIECE=[0xC600, 0x4C80];
-	var I_PIECE=[0x4444, 0xF000];
-	var T_PIECE=[0x4E00, 0x4640, 0xE400, 0x2620];
-	var pieces=[SQUARE_PIECE, REG_Z_PIECE, INV_Z_PIECE, I_PIECE, T_PIECE];
+	var SQUARE_PIECE=[0x0660];
+	var REG_Z_PIECE=[0x06C0, 0x0462, 0x0360, 0x4620];
+	var INV_Z_PIECE=[0x0630, 0x2640, 0x0C60, 0x0264];
+	var I_PIECE=[0x0F00, 0x4444, 0x00F0, 0x2222];
+	var T_PIECE=[0x04E0, 0x0262, 0x0720, 0x4640];
+	var REG_L_PIECE=[0x6440, 0x08E0, 0x0226, 0x0710];
+	var INV_L_PIECE=[0x6220, 0x0E80, 0x0446, 0x0170];
+	var pieces=[SQUARE_PIECE, REG_Z_PIECE, INV_Z_PIECE, I_PIECE, T_PIECE, REG_L_PIECE, INV_L_PIECE];
 	
 	var SCORE_INCREMENT=10;
 	var BONUS_INCREMENT=15;
@@ -50,11 +56,9 @@ No Support for Canvas, use a modern browser.
 	var splitLinesColor = '#D0D0D0';
 	var blockCurX = 5;
 	var blockCurY = 21;
-		
+	var timer;
 	function init(){
 		ctx.translate(0, CANVAS_HEIGHT); // Move the origin to bottom left
-		initModel();
-		paint();
 		startNewGame();
 		playGame();
 		// return setInterval(paint, 2000); // Paint is called each 10ms, to keep the view updated
@@ -177,7 +181,7 @@ No Support for Canvas, use a modern browser.
 			}
 		}
 		
-		drawNextBlock(blocksColor); // Draw the next block data
+		drawNextBlock(blockColor); // Draw the next block data
 		
 		// Clear the score and level area
 		ctx.fillStyle='#FFFFFF';
@@ -195,7 +199,7 @@ No Support for Canvas, use a modern browser.
 	}
 	
 	function drawNextBlock(blockColor){ // Color used to clear existing/draw new block
-			// Update the next piece with model data
+		// Update the next piece with model data
 		var bitMask=0x8000;
 		var y=0;
 		for(i=0;i<16;i++){
@@ -254,6 +258,10 @@ No Support for Canvas, use a modern browser.
 	}
 	
 	function startNewGame(){
+	
+		initModel();
+		paint();
+		
 		// Start the game
 		// Initialize current and next piece
 		curPieceIndex=Math.floor(Math.random()*11)%pieces.length;
@@ -261,21 +269,30 @@ No Support for Canvas, use a modern browser.
 		currentPiece=pieces[curPieceIndex][rotationIndex];
 		nextPiece=pieces[nextPieceIndex][rotationIndex];
 		
-		// Set the scores and level to 0s
+		// Set the scores and level to 0
 		score = 0;
 		level = 0;
 		
-		updateConsole(blocksColor);
+		blockCurX = 5;
+		blockCurY = 21;
 		
-		// setInterval(playGame, 2000);
+		updateConsole(blocksColor);
+		timer = setInterval(playGame, 750);
 	}
 	
 	function playGame(){
 
 		// Erase the previous block
-		
+		drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
+		if(canMoveDown()){
+			blockCurY = blockCurY-1;
+		}
+		else{ // Reached bottom
+			reachedBottom();
+		}
+				
 		// Draw the block at current x and y
-		drawBlock(currentPiece, blockCurX, blockCurY, '#000000');
+		drawBlock(currentPiece, blockCurX, blockCurY, blocksColor);
 		
 	}
 	
@@ -283,48 +300,157 @@ No Support for Canvas, use a modern browser.
 	
 		// Check if the next row below is filled (any bits set, for both bottom and blocks check)
 		var maskPosition = blockCurX+1; // Choose the mask based on the current block position
-		
-		if( (board[blockCurY]&(0XF000>>maskPosition))<<maskPosition & (currentPiece&0xF000) || 
-			(board[blockCurY+1]&(0XF000>>maskPosition))<<maskPosition & ((currentPiece&0x0F00)<<4) || 
-			(board[blockCurY+2]&(0XF000>>maskPosition))<<maskPosition & ((currentPiece&0x00F0)<<8) || 
-			(board[blockCurY+3]&(0XF000>>maskPosition))<<maskPosition & ((currentPiece&0x000F)<<12) ){
-			return false;
+			
+		for(i=0;i<4;i++){
+			if(blockCurY<0 && i==0) { // The block might have moved below the bottom, Ex for square block base is empty
+				i = (blockCurY*-1);
+			}
+			if( (board[blockCurY+i]&(0XF000>>maskPosition))<<maskPosition & ((currentPiece&(0xF000>>(4*i)))<<(4*i))){
+				return false;
+			}
 		}
 		return true;
 	}
 	
 	function canMoveRight(){
+		// Getting the columns, rotate once and bottom will hold the columns of the current
+		var tmpRotationIndex=(rotationIndex+1)%pieces[curPieceIndex].length;			
+		var rotatedPiece=pieces[curPieceIndex][tmpRotationIndex];
+		
+		// Take the first col from last and check if it can move right
+		var col = new Array(4);
+		col[0] = (rotatedPiece&0xF000)>>12; // Fourth Column of the block
+		col[1] = (rotatedPiece&0x0F00)>>8; // Third
+		col[2] = (rotatedPiece&0x00F0)>>4 // Second
+		col[3] = rotatedPiece&0x000F; // First
+		
+		// Populate the mask
+		var mask = 0x8000>>(blockCurX+5);
+		
+		// Get the comparision columns from the boards current values
+		var boardRight = new Array(4);
+		for(i=0;i<4;i++){ // For each column to be compared
+			boardRight[i] = 0;
+			for(j=1;j<=4;j++){ // For each brick in the col
+				boardRight[i] = boardRight[i]<<1;
+				if( board[blockCurY+j]&mask)
+					boardRight[i] = boardRight[i]|0x1;
+			}
+			
+			if(boardRight[i]&col[i]) // Check if any of the column in the block cant move right
+				return false;
+				
+			mask = 0x8000>>(blockCurX+5-i-1);
+				
+		}
+		
 		return true;
 	}
 	
 	function canMoveLeft(){
+		// Getting the columns, rotate once and bottom will hold the columns of the current
+		var tmpRotationIndex=(rotationIndex+1)%pieces[curPieceIndex].length;			
+		var rotatedPiece=pieces[curPieceIndex][tmpRotationIndex];
+		
+		// Take the first col from last and check if it can move right
+		var col = new Array(4);
+		col[0] = (rotatedPiece&0xF000)>>12; // Fourth Column of the block
+		col[1] = (rotatedPiece&0x0F00)>>8; // Third
+		col[2] = (rotatedPiece&0x00F0)>>4 // Second
+		col[3] = rotatedPiece&0x000F; // First
+		
+		// Populate the mask
+		var mask = 0x8000>>(blockCurX);
+		
+		// Get the comparision columns from the boards current values
+		var boardLeft = new Array(4);
+		var colIndex = 3;
+		for(i=0;i<4;i++){ // For each column to be compared
+			boardLeft[i] = 0;
+			for(j=1;j<=4;j++){ // For each brick in the col
+				boardLeft[i] = boardLeft[i]<<1;
+				if( board[blockCurY+j]&mask)
+					boardLeft[i] = boardLeft[i]|0x1;
+			}
+			
+			if(boardLeft[i]&col[colIndex--]) // Check if any of the column in the block cant move left
+				return false;
+				
+			mask = 0x8000>>(blockCurX+i+1);
+				
+		}
+		
 		return true;
 	}
+
+	function canRotate(){
+		// Getting the columns, of rotated blocl rotate twice and bottom will hold the columns of the current
+		var tmpRotationIndex=(rotationIndex+1)%pieces[curPieceIndex].length;
+		tmpRotationIndex=(tmpRotationIndex+1)%pieces[curPieceIndex].length; 
+		var rotatedPiece=pieces[curPieceIndex][tmpRotationIndex];
 		
-	function reachedBottom(){
-		// The block has reached the least bottom possible
+		// Take the first col from last and check if it can move right
+		var col = new Array(4);
+		col[0] = (rotatedPiece&0xF000)>>12; // Fourth Column of the block
+		col[1] = (rotatedPiece&0x0F00)>>8; // Third
+		col[2] = (rotatedPiece&0x00F0)>>4 // Second
+		col[3] = rotatedPiece&0x000F; // First
 		
+		// Populate the mask
+		var mask = 0x8000>>(blockCurX+1);
+		
+		// Get the comparision columns from the boards current values
+		var boardLeft = new Array(4);
+		var colIndex = 3;
+		for(i=0;i<4;i++){ // For each column to be compared
+			boardLeft[i] = 0;
+			for(j=1;j<=4;j++){ // For each brick in the col
+				boardLeft[i] = boardLeft[i]<<1;
+				if( board[blockCurY+j]&mask)
+					boardLeft[i] = boardLeft[i]|0x1;
+			}
+			
+			if(boardLeft[i]&col[colIndex--]) // Check if any of the column in the block cant move left
+				return false;
+				
+			mask = 0x8000>>(blockCurX+i+2);
+				
+		}
+		
+		return true;
+	}
+	
+	function reachedBottom(){ // The block has reached the least bottom possible, erase line, increment score/level
+		
+		if(blockCurY>20){
+			clearInterval(timer);
+			alert("Game Over");
+			startNewGame();
+			return;
+		}
 		var maskPosition = blockCurX+1; // Choose the mask based on the current block position
 		
 		// Merge the block to the board
-		board[blockCurY+1] = board[blockCurY+1] | (currentPiece&0xF000)>>maskPosition;
-		board[blockCurY+2] = board[blockCurY+2] | ((currentPiece&0x0F00)<<4)>>maskPosition;
+		if( blockCurY > -1){ // Block start is not in the base, Ex square will have base as blank
+			board[blockCurY+1] = board[blockCurY+1] | (currentPiece&0xF000)>>maskPosition;	
+		}
+		if(blockCurY > -2){
+			board[blockCurY+2] = board[blockCurY+2] | ((currentPiece&0x0F00)<<4)>>maskPosition;
+		}
+		
 		board[blockCurY+3] = board[blockCurY+3] | ((currentPiece&0x00F0)<<8)>>maskPosition;
 		board[blockCurY+4] = board[blockCurY+4] | ((currentPiece&0x000F)<<12)>>maskPosition;
-	
-		curPieceIndex=nextPieceIndex;
-		currentPiece=nextPiece;
-		rotationIndex=0;
-	
-		drawNextBlock(boardColor); // Erase the next block area
-		
-		nextPieceIndex=Math.floor(Math.random()*11)%pieces.length;
-		nextPiece=pieces[nextPieceIndex][rotationIndex];
 		
 		updateConsole(boardColor); // Erase board with current values
 		
 		var bonusEligible = false;
+
 		for(i=1;i<=4;i++){
+			
+			if(blockCurY < 0 && i==1){ // Current block pos may be below the board, do not delete the hidden base
+				i =  (blockCurY*-1) + 1;
+			}
+			
 			if(board[blockCurY+i]==0xFFFF) {
 				
 				// Increase the score
@@ -335,14 +461,22 @@ No Support for Canvas, use a modern browser.
 				bonusEligible = true;
 				
 				// Erase the line
-				for(j=blockCurY;j<board.length-3;j++){
+				for(j=blockCurY+i;j<board.length-1;j++){
 					// Move all rows above the erased one to one down
-					board[j+1]=board[j+2];
+					board[j]=board[j+1];
 				}
 				board[board.length-1]= 0x8001;
+				i--;
 			}
 		}
 
+		curPieceIndex=nextPieceIndex;
+		currentPiece=nextPiece;
+		rotationIndex=0;
+		
+		nextPieceIndex=Math.floor(Math.random()*11)%pieces.length;
+		nextPiece=pieces[nextPieceIndex][rotationIndex];
+		
 		blockCurX = 5;
 		blockCurY = 21;
 		
@@ -356,8 +490,10 @@ No Support for Canvas, use a modern browser.
 		
 		switch (evt.keyCode) {
 			case 38:  // Up key pressed
-				rotationIndex=(rotationIndex+1)%pieces[curPieceIndex].length;			
-				currentPiece=pieces[curPieceIndex][rotationIndex];
+				if(canRotate()){
+					rotationIndex=(rotationIndex+1)%pieces[curPieceIndex].length;			
+					currentPiece=pieces[curPieceIndex][rotationIndex];
+				}	
 				break;
 			case 40:  // Down key pressed
 				if(canMoveDown()){
