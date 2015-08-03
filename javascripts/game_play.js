@@ -68,7 +68,7 @@
 			
 			// Start New Game
 			//ctx.font = '30pt Colonna MT';
-			ctx.font = '30pt Jokerman';
+			ctx.font = '30pt MenuFont';
 			ctx.textAlign = 'center';
 			ctx.fillStyle = 'yellow';
 			
