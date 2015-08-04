@@ -8,6 +8,7 @@
 	
 	var score = 0;
 	var level = 0;
+	var linesCleared = 0;
 	var nextPiece = 0;
 	var currentPiece = 0;
 	var curPieceIndex=0;
@@ -34,11 +35,13 @@
 	var timer;
 	
 	var menuScreen = false;
+	var controlsScreen = false;
 	var selectedMenu = 0;
 	var gamePaused = false;
 	var startMenu=["Start New Game", "Controls"];
 	var pauseMenu=["Resume", "Start New Game"];
 	var currentMenu = startMenu;
+	var img_pattern;
 	
 	function init(){
 		ctx.translate(0, CANVAS_HEIGHT); // Move the origin to bottom left
@@ -48,29 +51,29 @@
 		onResize();
 		window.onblur=pauseGame;
 		showMenu(selectedMenu, startMenu);
-		//startNewGame();
-		//playGame();
 	}
 	
 	function showMenu(selectedItem, menu){
 		menuScreen = true;
+		controlsScreen = false;
 		currentMenu=menu;
 		// Display the background Image
 		var background = new Image();
 		background.src = 'images/bricks_bg2.jpg'; 
 		background.onload = function(){
-			var pattern = ctx.createPattern(this, "repeat");
-			ctx.fillStyle = pattern;
+			img_pattern = ctx.createPattern(this, "repeat");
+			ctx.fillStyle = img_pattern;
 			ctx.rect(0, 0, CANVAS_WIDTH, -CANVAS_HEIGHT);
 			ctx.fill();
 			
 			// Display Menu Items
-			
-			// Start New Game
 			//ctx.font = '30pt Colonna MT';
 			ctx.font = '30pt MenuFont';
 			ctx.textAlign = 'center';
 			ctx.fillStyle = 'yellow';
+			ctx.shadowOffsetX = 0;
+			ctx.shadowOffsetY = 0;
+			ctx.shadowBlur = 0;
 			
 			if(selectedItem==0){
 				ctx.shadowOffsetX = 5;
@@ -84,7 +87,6 @@
 			ctx.shadowOffsetY = 0;
 			ctx.shadowBlur = 0;
 			
-			// Controls
 			if(selectedItem==1){
 				ctx.shadowOffsetX = 5;
 				ctx.shadowOffsetY = 5;
@@ -98,6 +100,75 @@
 			ctx.shadowBlur = 0;
 			
 		};
+	}
+	
+	function showControls(){ // Display the controls page
+		controlsScreen = true;
+		ctx.fillStyle = img_pattern;
+		ctx.rect(0, 0, CANVAS_WIDTH, -CANVAS_HEIGHT);
+		ctx.fill();
+		
+		// Draw Border rectangle
+		ctx.beginPath();
+		ctx.strokeStyle = 'yellow';
+		ctx.lineWidth = 3;
+		var gradient=ctx.createLinearGradient(0,0,0,-CANVAS_HEIGHT);
+		ctx.rect(50,-50, CANVAS_WIDTH-100, -CANVAS_HEIGHT+100);
+		//ctx.fillStyle = '#3c170f';
+		gradient.addColorStop(0,'#2b170A');
+		gradient.addColorStop(1,'#5E3E0f');
+		ctx.fillStyle = gradient;
+		ctx.fill();
+		ctx.stroke();
+		
+		ctx.textAlign = 'left';
+		ctx.fillStyle = 'yellow';
+		ctx.shadowOffsetX = 3;
+		ctx.shadowOffsetY = 3;
+		ctx.shadowBlur = 0;
+		ctx.shadowColor = "black";
+		ctx.font = '25pt MenuFont';
+		ctx.fillText("Controls", 70, -CANVAS_HEIGHT+125);
+		ctx.font = '15pt Comic Sans MS';
+		ctx.fillText("Move Left : Left Arrow/Swipe Left", 100, -CANVAS_HEIGHT+200);
+		ctx.fillText("Move Right : Right Arrow/Swipe Right", 100, -CANVAS_HEIGHT+275);
+		ctx.fillText("Move Down : Down Arrow/Swipe Down", 100, -CANVAS_HEIGHT+350);
+		ctx.fillText("Rotate : Up Arrow/Tap", 100, -CANVAS_HEIGHT+425);
+		ctx.fillText("Pause : ESC Key/Pause Button", 100, -CANVAS_HEIGHT+500);
+		
+	}
+	
+	function gameOver(){ // Show the game over screen with score details
+		controlsScreen = true;
+		ctx.fillStyle = img_pattern;
+		ctx.rect(0, 0, CANVAS_WIDTH, -CANVAS_HEIGHT);
+		ctx.fill();
+		
+		// Draw Border rectangle
+		ctx.beginPath();
+		ctx.strokeStyle = 'yellow';
+		ctx.lineWidth = 3;
+		var gradient=ctx.createLinearGradient(0,0,0,-CANVAS_HEIGHT);
+		ctx.rect(50,-50, CANVAS_WIDTH-100, -CANVAS_HEIGHT+100);
+		//ctx.fillStyle = '#3c170f';
+		gradient.addColorStop(0,'#2b170A');
+		gradient.addColorStop(1,'#5E3E0f');
+		ctx.fillStyle = gradient;
+		ctx.fill();
+		ctx.stroke();
+		
+		ctx.textAlign = 'left';
+		ctx.fillStyle = 'yellow';
+		ctx.shadowOffsetX = 3;
+		ctx.shadowOffsetY = 3;
+		ctx.shadowBlur = 0;
+		ctx.shadowColor = "black";
+		ctx.font = '25pt MenuFont';
+		ctx.fillText("Game Over...", 70, -CANVAS_HEIGHT+125);
+		ctx.font = '15pt Comic Sans MS';
+		ctx.fillText("Score : " + score, 100, -CANVAS_HEIGHT+200);
+		ctx.fillText("Lines Cleared : " + linesCleared, 100, -CANVAS_HEIGHT+275);
+		ctx.fillText("Level : " + level, 100, -CANVAS_HEIGHT+350);
 	}
 	
 	function paint(){
@@ -115,7 +186,7 @@
 		for(i = 1; i < board.length; i++){
 			board[i]=0x8001; // hidden outer boundary on left and right
 		}
-		// nextPiece=0x0000;
+		nextPiece=0x0000;
 	}
 	
 	function drawConsole(){ // Creates the game console with play area, next piece, score, etc
@@ -309,6 +380,7 @@
 		// Set the scores and level to 0
 		score = 0;
 		level = 0;
+		linesCleared = 0;
 		
 		blockCurX = 5;
 		blockCurY = 21;
@@ -318,6 +390,8 @@
 	}
 	
 	function pauseGame(){
+		if(gamePaused || menuScreen)
+			return;
 		selectedMenu=0;
 		gamePaused = true;
 		clearInterval(timer);
@@ -475,10 +549,10 @@
 		
 		if(blockCurY>20){
 			clearInterval(timer);
-			alert("Game Over");
-			startNewGame();
+			gameOver();
 			return;
 		}
+		
 		var maskPosition = blockCurX+1; // Choose the mask based on the current block position
 		
 		// Merge the block to the board
@@ -503,7 +577,7 @@
 			}
 			
 			if(board[blockCurY+i]==0xFFFF) {
-				
+				linesCleared++;
 				// Increase the score
 				if(bonusEligible==true)
 					score = score + BONUS_INCREMENT;
@@ -537,9 +611,12 @@
 	function doKeyDown(evt){ // Monitor the Key Press Event
 	
 		// Erase the existing block position/rotation
-		if(!menuScreen)
+		if(!menuScreen && !controlsScreen)
 			drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
-	
+			
+		if(controlsScreen) // Back to menu on any key press from controls page
+			showMenu(selectedMenu, currentMenu);
+			
 		switch (evt.keyCode) {
 			case 13: // Enter Key
 				if(menuScreen && gamePaused){ // 0 - resume game, 1 - start new game
@@ -551,12 +628,12 @@
 				else if(menuScreen){ // Game start screen, 0 - start new game, 1 - controls
 					if(selectedMenu==0)
 						startNewGame();
+					else
+						showControls();
 				}
-				
 				break;
 			case 27: // ESC Key pressed, pause game
-				if(!gamePaused && !menuScreen)
-					pauseGame();
+				pauseGame();
 				break;
 			case 38:  // Up key pressed
 				if(menuScreen){ // Menu screen, start/paused
@@ -601,7 +678,7 @@
 		}
 		
 		// Draw the block at the new position/rotation
-		if(!menuScreen)
+		if(!menuScreen && !controlsScreen)
 		drawBlock(currentPiece, blockCurX, blockCurY, blocksColor);
 				
 	}
