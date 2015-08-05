@@ -26,7 +26,7 @@
 	var levelScores=[200, 350, 450, 550, 770];
 	var SCORE_INCREMENT=10;
 	var BONUS_INCREMENT=15;
-	var levelSpeed=750;
+	var levelSpeed=500;
 	
 	var boardColor = '#A0A0A0';
 	var blocksColor = '#000000';
@@ -188,6 +188,12 @@
 			board[i]=0x8001; // hidden outer boundary on left and right
 		}
 		nextPiece=0x0000;
+		
+		// Set the scores and level to 0
+		score = 0;
+		level = 0;
+		linesCleared = 0;
+		levelSpeed=500;
 	}
 	
 	function drawConsole(){ // Creates the game console with play area, next piece, score, etc
@@ -294,7 +300,7 @@
 		// Clear the score and level area
 		ctx.fillStyle='#FFFFFF';
 		ctx.beginPath();
-		ctx.rect(PLAY_AREA_WIDTH+50+50,-(PLAY_AREA_HEIGHT-BRICK_SIZE*8),200,200);
+		ctx.rect(PLAY_AREA_WIDTH+50+40,-(PLAY_AREA_HEIGHT-BRICK_SIZE*8),200,200);
 		ctx.fill(); 
 		
 		// Update the score
@@ -377,12 +383,7 @@
 		nextPieceIndex=Math.floor(Math.random()*11)%pieces.length;
 		currentPiece=pieces[curPieceIndex][rotationIndex];
 		nextPiece=pieces[nextPieceIndex][rotationIndex];
-		
-		// Set the scores and level to 0
-		score = 0;
-		level = 0;
-		linesCleared = 0;
-		
+				
 		blockCurX = 5;
 		blockCurY = 21;
 		
@@ -570,7 +571,7 @@
 		updateConsole(boardColor); // Erase board with current values
 		
 		var bonusEligible = false;
-
+		
 		for(i=1;i<=4;i++){
 			
 			if(blockCurY < 0 && i==1){ // Current block pos may be below the board, do not delete the hidden base
@@ -585,7 +586,7 @@
 				else
 					score = score + SCORE_INCREMENT;
 				bonusEligible = true;
-				
+			
 				// Erase the line
 				for(j=blockCurY+i;j<board.length-1;j++){
 					// Move all rows above the erased one to one down
@@ -597,13 +598,15 @@
 		}
 
 		// Check for level change
-		for(i=levelScores.length-1;i>=0;i++){
-			if(score>levelScores[i]){
-				level=i+1;
-				levelSpeed=levelSpeed-50;
-				clearInterval(timer);
-				timer = setInterval(playGame, levelSpeed);
-				break;
+		if(bonusEligible){ // bonusEligible set=score has changed
+			for(i=levelScores.length-1;i>=0;i--){
+				if(score>=levelScores[i]){
+					level=i+1;
+					levelSpeed=levelSpeed-75;
+					clearInterval(timer);
+					timer = setInterval(playGame, levelSpeed);
+					break;
+				}
 			}
 		}
 		
