@@ -23,7 +23,7 @@
 	var REG_L_PIECE=[0x6440, 0x08E0, 0x0226, 0x0710];
 	var INV_L_PIECE=[0x6220, 0x0E80, 0x0446, 0x0170];
 	var pieces=[SQUARE_PIECE, REG_Z_PIECE, INV_Z_PIECE, I_PIECE, T_PIECE, REG_L_PIECE, INV_L_PIECE];
-	var levelSocres=[200, 350, 450, 550, 770];
+	var levelScores=[200, 350, 450, 550, 770];
 	var SCORE_INCREMENT=10;
 	var BONUS_INCREMENT=15;
 	var levelSpeed=750;
