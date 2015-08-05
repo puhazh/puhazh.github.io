@@ -293,7 +293,7 @@
 		// Clear the score and level area
 		ctx.fillStyle='#FFFFFF';
 		ctx.beginPath();
-		ctx.rect(PLAY_AREA_WIDTH+50+55,-(PLAY_AREA_HEIGHT-BRICK_SIZE*8),200,200);
+		ctx.rect(PLAY_AREA_WIDTH+50+50,-(PLAY_AREA_HEIGHT-BRICK_SIZE*8),200,200);
 		ctx.fill(); 
 		
 		// Update the score
