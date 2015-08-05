@@ -26,7 +26,7 @@
 	var levelSocres=[200, 350, 450, 550, 770];
 	var SCORE_INCREMENT=10;
 	var BONUS_INCREMENT=15;
-	var levelSpeed=750;//ms
+	var levelSpeed=750;
 	
 	var boardColor = '#A0A0A0';
 	var blocksColor = '#000000';
@@ -597,7 +597,7 @@
 		}
 
 		// Check for level change
-		for(i=levelSocres.length-1;i>=0i++){
+		for(i=levelSocres.length-1;i>=0;i++){
 			if(score>levelScores[i]){
 				level=i+1;
 				levelSpeed=levelSpeed-50;
