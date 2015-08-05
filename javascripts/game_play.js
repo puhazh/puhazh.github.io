@@ -597,7 +597,7 @@
 		}
 
 		// Check for level change
-		for(i=levelSocres.length-1;i>=0;i++){
+		for(i=levelScores.length-1;i>=0;i++){
 			if(score>levelScores[i]){
 				level=i+1;
 				levelSpeed=levelSpeed-50;
