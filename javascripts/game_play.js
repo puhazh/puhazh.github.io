@@ -331,6 +331,12 @@
 				y++;
 			bitMask = bitMask>>1;
 		}
+		
+		// Draw next block border
+		ctx.beginPath();
+		ctx.strokeStyle = '#000000';
+		ctx.rect(PLAY_AREA_WIDTH+50,-(PLAY_AREA_HEIGHT-50-BRICK_SIZE*4), BRICK_SIZE*4, -BRICK_SIZE*4);
+		ctx.stroke();
 	}
 	
 	function drawBlock(block, colX, colY, blockColor){ // Displays the block on the board, also used to reset display (when board color is passed)
@@ -354,7 +360,14 @@
 			}
 			bitMask = bitMask>>1;
 		}
-	
+		
+		// Draw the play area border, the border might be erased when the block moves
+		ctx.lineWidth = 3;
+		ctx.strokeStyle = '#000000';
+		ctx.beginPath();
+		ctx.rect(0, 0, PLAY_AREA_WIDTH, -PLAY_AREA_HEIGHT);
+		ctx.stroke();
+		
 		return;
 	}
 	
