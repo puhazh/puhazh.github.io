@@ -8,6 +8,7 @@
 	
 	var score = 0;
 	var level = 0;
+	var highScore = 0;
 	var linesCleared = 0;
 	var nextPiece = 0;
 	var currentPiece = 0;
@@ -139,6 +140,29 @@
 		
 	}
 	
+	function writeHighScoreToCookie(){
+		var now = new Date();
+        now.setMonth( now.getMonth() + 1 );
+        var cookievalue = escape(score) + ";";
+		document.cookie="hiscore=" + cookievalue;
+        document.cookie = "expires=" + now.toUTCString() + ";";
+	}
+	
+	function getHighScoreFromCookie(){
+		var allcookies = document.cookie;
+		// Get the cookies pairs in an array
+		var cookiearray = allcookies.split(';');
+         
+		// Now take key value pair out of this array
+		for(var i=0; i<cookiearray.length; i++){
+			name = cookiearray[i].split('=')[0];
+			value = cookiearray[i].split('=')[1];
+			if(name=="hiscore"){
+				highScore=value;
+			}
+		}
+	}
+	
 	function gameOver(){ // Show the game over screen with score details
 		controlsScreen = true;
 		ctx.fillStyle = img_pattern;
@@ -158,6 +182,9 @@
 		ctx.fill();
 		ctx.stroke();
 		
+		if(score>highScore)
+			writeHighScoreToCookie();
+		
 		ctx.textAlign = 'left';
 		ctx.fillStyle = 'yellow';
 		ctx.shadowOffsetX = 3;
@@ -170,6 +197,7 @@
 		ctx.fillText("Score : " + score, 100, -CANVAS_HEIGHT+200);
 		ctx.fillText("Lines Cleared : " + linesCleared, 100, -CANVAS_HEIGHT+275);
 		ctx.fillText("Level : " + level, 100, -CANVAS_HEIGHT+350);
+		ctx.fillText("High Score : " + highScore, 100, -CANVAS_HEIGHT+425);
 	}
 	
 	function paint(){
@@ -194,6 +222,7 @@
 		level = 0;
 		linesCleared = 0;
 		levelSpeed=500;
+		getHighScoreFromCookie();// load the high score from cookie
 	}
 	
 	function drawConsole(){ // Creates the game console with play area, next piece, score, etc
