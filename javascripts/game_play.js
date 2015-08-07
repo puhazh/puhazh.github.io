@@ -155,9 +155,9 @@
          
 		// Now take key value pair out of this array
 		for(var i=0; i<cookiearray.length; i++){
-			name = cookiearray[i].split('=')[0];
+			var name = String(cookiearray[i].split('=')[0]);
 			value = cookiearray[i].split('=')[1];
-			if(name=="hiscore"){
+			if(name=='hiscore'){
 				highScore=value;
 			}
 		}
