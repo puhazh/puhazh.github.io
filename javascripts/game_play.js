@@ -24,7 +24,7 @@
 	var REG_L_PIECE=[0x6440, 0x08E0, 0x0226, 0x0710];
 	var INV_L_PIECE=[0x6220, 0x0E80, 0x0446, 0x0170];
 	var pieces=[SQUARE_PIECE, REG_Z_PIECE, INV_Z_PIECE, I_PIECE, T_PIECE, REG_L_PIECE, INV_L_PIECE];
-	var levelScores=[200, 350, 450, 550, 770];
+	var levelScores=[200, 400, 600, 800, 1000];
 	var SCORE_INCREMENT=10;
 	var BONUS_INCREMENT=15;
 	var levelSpeed=500;
@@ -198,7 +198,7 @@
 		ctx.fillText("Score : " + score, 100, -CANVAS_HEIGHT+200);
 		ctx.fillText("Lines Cleared : " + linesCleared, 100, -CANVAS_HEIGHT+275);
 		ctx.fillText("Level : " + level, 100, -CANVAS_HEIGHT+350);
-		ctx.fillText("High Score : " + highScore, 100, -CANVAS_HEIGHT+425);
+		ctx.fillText("Your High Score : " + highScore, 100, -CANVAS_HEIGHT+425);
 	}
 	
 	function paint(){
@@ -454,7 +454,8 @@
 	function playGame(){
 
 		// Erase the previous block
-		drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
+		if(!menuScreen && !controlsScreen)
+			drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
 		if(canMoveDown()){
 			blockCurY = blockCurY-1;
 		}
@@ -463,7 +464,8 @@
 		}
 
 		// Draw the block at current x and y
-		drawBlock(currentPiece, blockCurX, blockCurY, blocksColor);
+		if(!menuScreen && !controlsScreen)
+			drawBlock(currentPiece, blockCurX, blockCurY, blocksColor);
 		
 	}
 	
@@ -643,7 +645,7 @@
 		// Check for level change
 		if(bonusEligible){ // bonusEligible set=score has changed
 			for(i=levelScores.length-1;i>=0;i--){
-				if(score>=levelScores[i]){
+				if(score>=levelScores[i] && level!=i+1){
 					level=i+1;
 					levelSpeed=levelSpeed-75;
 					clearInterval(timer);
