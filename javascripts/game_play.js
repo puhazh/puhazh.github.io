@@ -53,7 +53,6 @@
 		
 		// Event listener for swipe
 		swipedetect(canvas, function(swipedir, startX, startY){
-			alert(swipedir);
 			if(swipedir != 'none')
 				swipeAction(swipedir);
 			else
@@ -748,7 +747,7 @@
 		// Game screen
 	}
 	
-	function swipeAction(swipepos){
+	function swipeAction(swipedir){
 	
 		if(controlsScreen) { // Back to menu on touch from controls page
 			showMenu(selectedMenu, currentMenu);
@@ -759,22 +758,14 @@
 		if(!menuScreen)
 			drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
 
-		if (swipedir =='left'){
-			alert("left");
+		if (swipedir =='left')
 			leftAction();
-		}
-		else if(swipedir =='right'){
-			alert('right');
+		else if(swipedir =='right')
 			rightAction();
-		}
-		else if(swipedir =='down'){
-			alert('down');
+		else if(swipedir =='down')
 			downAction();
-		}
-		else if(swipedir == 'up'){
-			alert('up');
+		else if(swipedir == 'up')
 			upAction();
-		}
 		
 		// Draw the block at the new position/rotation
 		if(!menuScreen)
