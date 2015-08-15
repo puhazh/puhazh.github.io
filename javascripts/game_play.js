@@ -53,16 +53,10 @@
 		
 		// Event listener for swipe
 		swipedetect(canvas, function(swipedir, startX, startY){
-			if (swipedir =='left')
-				leftAction();
-			else if(swipedir =='right')
-				rightAction();
-			else if(swipedir =='down')
-				downAction();
-			else if(swipedir == 'up')
-				upAction();
+			if(swipedir != 'none')
+				swipeAction(swipedir);
 			else
-				alert('x=' + startX + ', y=' + startY);
+				touchAction(startX, startY);
 		});
 		
 		window.addEventListener("resize", onResize, false); 
@@ -729,14 +723,64 @@
 		}
 	}
 	
+	function touchAction(xPos, yPos){ // Handle touch action
+
+		if(controlsScreen) { // Back to menu on touch from controls page
+			showMenu(selectedMenu, currentMenu);
+			return;
+		}
+
+		// Start screen
+		if(menuScreen && !gamePaused){
+			if(xPos > 70 && xPos<250 && yPos>120 && yPos<150) // Start new game selected
+				startNewGame();
+			else if(xPos > 115 && xPos<200 && yPos>180 && yPos<200) // Controls
+				showControls();
+		}
+		// Pause screen
+		else if(menuScreen){
+			if(xPos > 90 && xPos<230 && yPos>120 && yPos<150) // resume game
+				resumeGame();
+			else if(xPos > 70 && xPos<250 && yPos>180 && yPos<200)
+				startNewGame();
+		}
+		// Game screen
+	}
+	
+	function swipeAction(swipepos){
+	
+		if(controlsScreen) { // Back to menu on touch from controls page
+			showMenu(selectedMenu, currentMenu);
+			return;
+		}
+		
+		// Erase the existing block position/rotation
+		if(!menuScreen)
+			drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
+
+		if (swipedir =='left')
+			leftAction();
+		else if(swipedir =='right')
+			rightAction();
+		else if(swipedir =='down')
+			downAction();
+		else if(swipedir == 'up')
+			upAction();
+		
+		// Draw the block at the new position/rotation
+		if(!menuScreen)
+			drawBlock(currentPiece, blockCurX, blockCurY, blocksColor);
+	}
 	function doKeyDown(evt){ // Monitor the Key Press Event
 	
-		// Erase the existing block position/rotation
-		if(!menuScreen && !controlsScreen)
-			drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
-			
-		if(controlsScreen) // Back to menu on any key press from controls page
+		if(controlsScreen) { // Back to menu on any key press from controls page
 			showMenu(selectedMenu, currentMenu);
+			return;
+		}
+			
+		// Erase the existing block position/rotation
+		if(!menuScreen)
+			drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
 			
 		switch (evt.keyCode) {
 			case 13: // Enter Key
@@ -771,8 +815,8 @@
 		}
 		
 		// Draw the block at the new position/rotation
-		if(!menuScreen && !controlsScreen)
-		drawBlock(currentPiece, blockCurX, blockCurY, blocksColor);
+		if(!menuScreen)
+			drawBlock(currentPiece, blockCurX, blockCurY, blocksColor);
 				
 	}
 	
