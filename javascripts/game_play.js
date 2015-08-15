@@ -1,5 +1,5 @@
-	var canvas=document.getElementById("gameConsole");
-	var ctx=canvas.getContext("2d");
+	var canvas=null;
+	var ctx=null;
 	var CANVAS_WIDTH = 550;
 	var CANVAS_HEIGHT = 625;
 	var PLAY_AREA_WIDTH = 350;
@@ -46,6 +46,8 @@
 	var img_pattern;
 	
 	function init(){
+		canvas = document.getElementById("gameConsole");
+		ctx=canvas.getContext("2d");
 		ctx.translate(0, CANVAS_HEIGHT); // Move the origin to bottom left
 		window.addEventListener('keydown',doKeyDown,true);
 		
