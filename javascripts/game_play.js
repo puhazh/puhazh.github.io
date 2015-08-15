@@ -48,6 +48,22 @@
 	function init(){
 		ctx.translate(0, CANVAS_HEIGHT); // Move the origin to bottom left
 		window.addEventListener('keydown',doKeyDown,true);
+		
+		// Event listener for swipe
+		swipedetect(canvas, function(swipedir){
+			if (swipedir =='left'){
+				alert('Swipe left');
+				leftAction();
+			}
+			else if(swipedir =='right')
+				rightAction();
+			else if(swipedir =='down')
+				downAction();
+			else if(swipedir == 'up')
+				upAction();
+		});
+		
+		
 		window.addEventListener("resize", onResize, false); 
 		window.addEventListener('orientationchange', onResize, false);
 		onResize();
@@ -759,19 +775,6 @@
 				
 	}
 	
-	swipedetect(canvas, function(swipedir){
-		if (swipedir =='left'){
-			alert('Swipe left');
-			leftAction();
-		}
-		else if(swipedir =='right')
-			rightAction();
-		else if(swipedir =='down')
-			downAction();
-		else if(swipedir == 'up')
-			upAction();
-	});
-
 	// Resize the game canvas when the window is resized
 	function onResize() { 
 		var gameWidth = window.innerWidth; 
