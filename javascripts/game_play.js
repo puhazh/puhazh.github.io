@@ -758,14 +758,22 @@
 		if(!menuScreen)
 			drawBlock(currentPiece, blockCurX, blockCurY, boardColor);
 
-		if (swipedir =='left')
+		if (swipedir =='left'){
+			alert("left");
 			leftAction();
-		else if(swipedir =='right')
+		}
+		else if(swipedir =='right'){
+			alert('right');
 			rightAction();
-		else if(swipedir =='down')
+		}
+		else if(swipedir =='down'){
+			alert('down');
 			downAction();
-		else if(swipedir == 'up')
+		}
+		else if(swipedir == 'up'){
+			alert('up');
 			upAction();
+		}
 		
 		// Draw the block at the new position/rotation
 		if(!menuScreen)
