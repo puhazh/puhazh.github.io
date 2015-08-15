@@ -11,7 +11,7 @@ function swipedetect(el, callback){
     allowedTime = 400, // maximum time allowed to travel that distance
     elapsedTime,
     startTime,
-    handleswipe = callback || function(swipedir, startX, startY){},
+    handleswipe = callback || function(swipedir, startX, startY){};
   
     touchsurface.addEventListener('touchstart', function(e){
         var touchobj = e.changedTouches[0];
