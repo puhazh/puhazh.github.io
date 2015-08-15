@@ -668,6 +668,50 @@
 		updateConsole(blocksColor); // Update with new values
 	}
 	
+	function upAction(){ // Up Key/Swipe Up action
+		if(menuScreen){ // Menu screen, start/paused
+			selectedMenu = (selectedMenu+1)%2;
+			showMenu(selectedMenu, currentMenu);
+		}
+		else{
+			if(canRotate()){
+				rotationIndex=(rotationIndex+1)%pieces[curPieceIndex].length;			
+				currentPiece=pieces[curPieceIndex][rotationIndex];
+			}
+		}
+	}
+	
+	function downAction(){ //Up Key/Swipe Up action
+					if(menuScreen){ // Menu screen, start/paused
+					selectedMenu = (selectedMenu+1)%2;
+					showMenu(selectedMenu, currentMenu);
+				}
+				else{
+					if(canMoveDown()){
+						blockCurY = blockCurY-1;
+					}
+					else{ // Reached bottom
+						reachedBottom();
+					}
+				}
+	}
+	
+	function leftAction(){ // Left Key/Swipe Left action
+		if(!menuScreen){
+					if(canMoveLeft()){
+						blockCurX = blockCurX-1;
+					}
+		}
+	}
+	
+	function rightAction(){ // Right Key/Swipe Right action
+		if(!menuScreen){
+			if(canMoveRight()){
+				blockCurX = blockCurX+1;
+			}
+		}
+	}
+	
 	function doKeyDown(evt){ // Monitor the Key Press Event
 	
 		// Erase the existing block position/rotation
@@ -696,44 +740,16 @@
 				pauseGame();
 				break;
 			case 38:  // Up key pressed
-				if(menuScreen){ // Menu screen, start/paused
-					selectedMenu = (selectedMenu+1)%2;
-					showMenu(selectedMenu, currentMenu);
-				}
-				else{
-					if(canRotate()){
-						rotationIndex=(rotationIndex+1)%pieces[curPieceIndex].length;			
-						currentPiece=pieces[curPieceIndex][rotationIndex];
-					}
-				}
+				upAction();
 				break;
 			case 40:  // Down key pressed
-				if(menuScreen){ // Menu screen, start/paused
-					selectedMenu = (selectedMenu+1)%2;
-					showMenu(selectedMenu, currentMenu);
-				}
-				else{
-					if(canMoveDown()){
-						blockCurY = blockCurY-1;
-					}
-					else{ // Reached bottom
-						reachedBottom();
-					}
-				}
+				downAction();
 				break;
 			case 37:  // Left key pressed
-				if(!menuScreen){
-					if(canMoveLeft()){
-						blockCurX = blockCurX-1;
-					}
-				}
+				leftAction();
 				break;
 			case 39:  // Right key pressed
-				if(!menuScreen){
-					if(canMoveRight()){
-						blockCurX = blockCurX+1;
-					}
-				}
+				rightAction();
 				break;
 		}
 		
@@ -743,6 +759,19 @@
 				
 	}
 	
+	swipedetect(canvas, function(swipedir){
+		if (swipedir =='left'){
+			alert('Swipe left');
+			leftAction();
+		}
+		else if(swipedir =='right')
+			rightAction();
+		else if(swipedir =='down')
+			downAction();
+		else if(swipedir == 'up')
+			upAction();
+	});
+
 	// Resize the game canvas when the window is resized
 	function onResize() { 
 		var gameWidth = window.innerWidth; 
