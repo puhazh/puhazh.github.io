@@ -40,7 +40,7 @@ function swipedetect(el, callback){
                 swipedir = (distY < 0)? 'up' : 'down'; // if dist traveled is negative, it indicates up swipe
             }
         }
-        handleswipe(swipedir);
+        handleswipe(swipedir, startX, startY);
         e.preventDefault();
     }, false);
 }
