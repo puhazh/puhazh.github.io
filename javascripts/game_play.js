@@ -53,6 +53,7 @@
 		
 		// Event listener for swipe
 		swipedetect(canvas, function(swipedir, startX, startY){
+			alert(swipedir);
 			if(swipedir != 'none')
 				swipeAction(swipedir);
 			else
