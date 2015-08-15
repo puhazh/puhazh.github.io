@@ -50,19 +50,18 @@
 		window.addEventListener('keydown',doKeyDown,true);
 		
 		// Event listener for swipe
-		swipedetect(canvas, function(swipedir){
-			if (swipedir =='left'){
-				alert('Swipe left');
+		swipedetect(canvas, function(swipedir, startX, startY){
+			if (swipedir =='left')
 				leftAction();
-			}
 			else if(swipedir =='right')
 				rightAction();
 			else if(swipedir =='down')
 				downAction();
 			else if(swipedir == 'up')
 				upAction();
+			else
+				alert('x=' + startX + ', y=' + startY);
 		});
-		
 		
 		window.addEventListener("resize", onResize, false); 
 		window.addEventListener('orientationchange', onResize, false);
