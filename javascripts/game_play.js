@@ -44,6 +44,7 @@
 	var pauseMenu=["Resume", "Start New Game"];
 	var currentMenu = startMenu;
 	var img_pattern;
+	var optimalRatio = 1; // Screen resize ratio
 	
 	function init(){
 		canvas = document.getElementById("gameConsole");
@@ -51,7 +52,7 @@
 		ctx.translate(0, CANVAS_HEIGHT); // Move the origin to bottom left
 		window.addEventListener('keydown',doKeyDown,true);
 		
-		// Event listener for swipe
+		// Event listener for swipe/touch/click
 		swipedetect(canvas, function(swipedir, startX, startY){
 			if(swipedir != 'none')
 				swipeAction(swipedir);
@@ -724,7 +725,6 @@
 	}
 	
 	function touchAction(xPos, yPos){ // Handle touch action
-
 		if(controlsScreen) { // Back to menu on touch from controls page
 			showMenu(selectedMenu, currentMenu);
 			return;
@@ -732,16 +732,16 @@
 
 		// Start screen
 		if(menuScreen && !gamePaused){
-			if(xPos > 70 && xPos<250 && yPos>120 && yPos<150) // Start new game selected
+			if(xPos > optimalRatio*110 && xPos<optimalRatio*430 && yPos>optimalRatio*220 && yPos<optimalRatio*260) // Start new game selected
 				startNewGame();
-			else if(xPos > 115 && xPos<200 && yPos>180 && yPos<200) // Controls
+			else if(xPos > optimalRatio*190 && xPos<optimalRatio*360 && yPos>optimalRatio*235 && yPos<optimalRatio*360) // Controls
 				showControls();
 		}
 		// Pause screen
 		else if(menuScreen){
-			if(xPos > 90 && xPos<230 && yPos>120 && yPos<150) // resume game
+			if(xPos > optimalRatio*200 && xPos<optimalRatio*350 && yPos>optimalRatio*225 && yPos<optimalRatio*265) // resume game
 				resumeGame();
-			else if(xPos > 70 && xPos<250 && yPos>180 && yPos<200)
+			else if(xPos > optimalRatio*115 && xPos<optimalRatio*435 && yPos>optimalRatio*325 && yPos<optimalRatio*365)
 				startNewGame();
 		}
 		// Game screen
@@ -828,7 +828,7 @@
 		var scaleToFitY = gameHeight / 625; 
 		 
 		var currentScreenRatio = gameWidth / gameHeight; 
-		var optimalRatio = Math.min(scaleToFitX, scaleToFitY); 
+		optimalRatio = Math.min(scaleToFitX, scaleToFitY); 
 		optimalRatio = optimalRatio-0.05;
 		 
 		if (currentScreenRatio >= 1.77 && currentScreenRatio <= 1.79) { 
