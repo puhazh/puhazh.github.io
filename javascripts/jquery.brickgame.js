@@ -157,7 +157,7 @@
                 ctx.shadowOffsetY = 3;
                 ctx.shadowBlur = 0;
                 ctx.shadowColor = "black";
-                ctx.font = '25pt ' + MenuFont;
+                ctx.font = '25pt ' + settings.MenuFont;
                 ctx.fillText("Controls", 70, -CANVAS_HEIGHT+125);
                 ctx.font = '15pt Comic Sans MS';
                 ctx.fillText("Move Left : Left Arrow/Swipe Left", 100, -CANVAS_HEIGHT+200);
