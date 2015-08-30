@@ -7,8 +7,13 @@
 	<meta charset="UTF-8" />
 	<title>Bricks</title>
 	<script src="javascripts/analytics.js"></script>
-	<script src="javascripts/game_play.js"></script>
-	<script src="javascripts/touch_support.js"></script>
+	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.js"></script>
+	<script src="javascripts/jquery.brickgame.js"></script>
+	<script>
+	$(document).ready( function() {
+	    $('#gameConsole').brickGame({boardColor:'grey', blocksColor: 'black', splitLinesColor: 'white', menuFont: 'MenuFont', resizeCanvas: true});
+	});
+	</script>	
 	<style id="css">
 	@font-face {
 		font-family: 'MenuFont';
@@ -16,7 +21,7 @@
 	}
 	</style>
 </head>
-<body onload="init()">
+<body>
 <div style="font-family: MenuFont; color:white; height:0; width:0;">.</div>
 <canvas id="gameConsole" width="550" height="625" style="border:1px solid #c3c3c3; display:block; margin:auto"> 
 No Support for Canvas, use a modern browser.
